@@ -26,7 +26,7 @@
 
         <div class="create-container">
             <h2>Account Creation.</h2>
-            <form id="create" method="POST" action="http://127.0.0.1:8000/user/register">
+            <form id="create-form" method="POST" action="http://127.0.0.1:8000/user/register">
                 <label for="username"></label>
                 <input type="text" id="username" name="username" required placeholder="Username">
 
@@ -51,4 +51,29 @@
                 document.getElementById("create").reset();
             };
         </script>
-        
+        <script>
+            document.getElementById('create-form').addEventListener('submit', async function(event) {
+                event.preventDefault();
+            
+                const formData = {
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    is_admin: document.getElementById('is_admin').value === "true"
+                };
+            
+                const response = await fetch('http://127.0.0.1:8000/user/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+            
+                if (response.ok) {
+                    alert('Account created successfully!');
+                } else {
+                    alert('Failed to create account!');
+                }
+            });
+        </script>
