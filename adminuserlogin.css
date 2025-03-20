@@ -1,0 +1,67 @@
+/* user & admin login page */
+.user-login {
+    padding: 20px;
+    width: 600px;
+    margin: auto;
+    color: #549BCC;
+    font-size: 30px;
+}
+
+.admin-login {
+    padding: 20px;
+    width: 600px;
+    margin: auto;
+    color: #549BCC;
+    font-size: 30px;
+}
+
+h2 {
+    margin-top: 50px;
+}
+form {
+    color: white;
+}
+
+.create-container {
+    padding: 20px;
+    width: 600px;
+    height: 700px;
+    margin: auto;
+    color: #549BCC;
+    font-size: 30px;
+}
+
+input::placeholder {
+    color: #549BCC;
+}
+
+input {
+    width: 550px;
+    height: 25px;
+    border: 2px solid #549BCC;
+    background-color: black;
+    padding: 10px;
+    color: white;
+
+}
+
+label, select {
+    color: #549BCC;
+    padding: 15px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #549BCC;
+    text: black;
+    border: none;
+    width: 200px;
+    height: 50px;
+    font-size: 24px;
+    font-style: bold;
+}
+
+#password {
+    margin-bottom:30px;
+}
+/* user & admin login page */

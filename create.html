@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Proton Trading</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="accountcreation.css">
+    </head>
+    
+    <body>
+        <div id="wrapper">
+            <header>
+                <section id="top_bar">
+                    <nav>
+                        <ul>
+                            <li><a href="index.html"> <img src="protonlogo.jpg" class="logo" alt="Proton Logo"></a></li>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="watchlist.html">Watchlist</a></li>
+                            <li><a href="create.html">Create Account</a></li>
+                            <li><a href="admin.html">Admin Login</a></li>
+                            <li><a href="user.html">User Login</a></li>
+                        </ul>
+                    </nav>
+                </section>
+            </header>
+
+        <div class="create-container">
+            <h2>Account Creation.</h2>
+            <form id="create" method="POST" action="http://127.0.0.1:8000/user/register">
+                <label for="username"></label>
+                <input type="text" id="username" name="username" required placeholder="Username">
+
+                <label for="email"></label>
+                <input type="email" id="email" name="email" required placeholder="Email">
+    
+                <label for="password"></label>
+                <input type="password" id="password" name="password" required placeholder="Password">
+
+                <label for="is_admin"></label>
+                    <select name="is_admin" id="is_admin">
+                            <option disabled selected>Admin Account?</option>
+                            <option value="true"> Yes </option>
+                            <option value="false"> No </option>
+                    </select>
+                <button type="submit">Create Account</button>
+            </form>
+        </div>
+
+        <script>
+            window.onload = function() {
+                document.getElementById("create").reset();
+            };
+        </script>

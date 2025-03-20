@@ -1,0 +1,39 @@
+/*all pages */
+body {
+    background-color:black;
+    width: 1800px;
+    margin: auto;
+    text-align: center;
+}
+
+.protontypeface {
+    display: grid;
+    place-items: center;
+}
+
+.protontypeface img{
+    width: 800px;
+    height: 260px;
+    display: grid;
+    place-items: center;
+}
+
+nav ul li .logo {
+    float: left;
+}
+
+nav ul li {
+    list-style-type: none;
+    display: inline;
+    padding: 80px;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 70px;
+}
+
+li a { 
+    text-decoration: none; color:#549BCC; 
+}
+
+
+/*all pages ^*/

@@ -1,0 +1,66 @@
+/* account creation page */
+h2 {
+    margin-top: 50px;
+}
+form {
+    color: white;
+}
+
+.create-container {
+    padding: 20px;
+    width: 600px;
+    height: 700px;
+    margin: auto;
+    color: #549BCC;
+    font-size: 30px;
+}
+
+input::placeholder {
+    color: #549BCC
+}
+
+select {
+    margin: auto;
+    border: 2px solid #549BCC;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    height: 50px;
+    width: 575px;
+}
+
+input {
+    width: 550px;
+    height: 25px;
+    border: 2px solid #549BCC;
+    background-color: black;
+    padding: 10px;
+    color: white;
+
+}
+
+
+select {
+    margin-bottom: 30px;
+}
+
+label, select {
+    color: #549BCC;
+    padding: 15px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #549BCC;
+    text: black;
+    border: none;
+    width: 200px;
+    height: 50px;
+    font-size: 24px;
+    font-style: bold;
+}
+
+option {
+    color: #549BCC;
+}
+/* account creation page ^ */
