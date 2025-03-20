@@ -17,7 +17,6 @@ from database import get_db
 from models import User  
 from auth_utils import get_current_user 
 from fastapi import APIRouter
-from fastapi.middleware.cors import CORSMiddleware
 
 # Constants
 SECRET_KEY = "your_secret_key_here"
@@ -27,16 +26,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # FastAPI 
 app = APIRouter()
 router = APIRouter()
-app = FastAPI()
 
-# Add CORS middleware to allow requests from your frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins, you can specify the specific origin(s) here
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
-)
 
 @router.get("/user/me")
 def get_user_info(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
