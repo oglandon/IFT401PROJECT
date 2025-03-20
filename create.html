@@ -51,39 +51,4 @@
                 document.getElementById("create").reset();
             };
         </script>
-        <script>
-            document.getElementById("create-form").addEventListener("submit", async (event) => {
-                event.preventDefault();
         
-                const form = event.target;
-                const formData = new FormData(form);
-        
-                // Convert form data to JSON
-                const jsonData = {
-                    username: formData.get("username"),
-                    email: formData.get("email"),
-                    password: formData.get("password"),
-                    is_admin: formData.get("is_admin") === "true"  // Convert to boolean
-                };
-        
-                try {
-                    const response = await fetch("http://127.0.0.1:8000/user/register", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(jsonData)
-                    });
-        
-                    if (response.ok) {
-                        const result = await response.json();
-                        alert(`User created: ${result.username}`);
-                    } else {
-                        const error = await response.json();
-                        alert(`Error: ${error.detail}`);
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                }
-            });
-        </script>
