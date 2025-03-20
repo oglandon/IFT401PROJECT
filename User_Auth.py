@@ -17,6 +17,7 @@ from database import get_db
 from models import User  
 from auth_utils import get_current_user 
 from fastapi import APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 
 # Constants
 SECRET_KEY = "your_secret_key_here"
