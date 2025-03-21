@@ -44,28 +44,39 @@
             </script>
             <script>
                 document.getElementById("adminloginform").addEventListener("submit", async function(event) {
-                    event.preventDefault();
-            
+                    event.preventDefault();  // Prevent default form submission
+
                     const email = document.getElementById("email").value;
                     const password = document.getElementById("password").value;
-            
-                    const endpoint = "http://127.0.0.1:8000/user/token";
-            
+
+                    // FastAPI's OAuth2PasswordRequestForm requires form-urlencoded format
+                    const formData = new URLSearchParams();
+                    formData.append("username", email);   // FastAPI uses "username" for OAuth2
+                    formData.append("password", password);
+
+                    const endpoint = "http://127.0.0.1:8000/token";
+
                     try {
                         const response = await fetch(endpoint, {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/json"
+                                "Content-Type": "application/x-www-form-urlencoded"
                             },
-                            body: JSON.stringify({ email: email, password: password })
+                            body: formData
                         });
-            
+
                         if (response.ok) {
-             
+                            const data = await response.json();
+                            const accessToken = data.access_token;  // JWT token from FastAPI response
+
+                            // ✅ Store the token in localStorage or sessionStorage for future requests
+                            localStorage.setItem("access_token", accessToken);
+
+                            // ✅ Redirect to "useraccount.html"
                             window.location.href = "useraccount.html";
                         } else {
-       
-                            alert("Login failed: Invalid email or password.");
+                            // ❌ Login failed - Show popup message
+                            alert("Login failed: Incorrect username or password.");
                         }
                     } catch (error) {
                         console.error("Error:", error);
