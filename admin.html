@@ -54,7 +54,7 @@
                     formData.append("username", email);   // FastAPI uses "username" for OAuth2
                     formData.append("password", password);
 
-                    const endpoint = "http://127.0.0.1:8000/user/token";
+                    const endpoint = "http://127.0.0.1:8000/token";
 
                     try {
                         const response = await fetch(endpoint, {
