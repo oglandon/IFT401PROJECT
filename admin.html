@@ -44,19 +44,20 @@
             </script>
             <script>
                 document.getElementById("adminloginform").addEventListener("submit", async function(event) {
-                    event.preventDefault();  // Prevent default form submission
+                    event.preventDefault();
 
                     const email = document.getElementById("email").value;
                     const password = document.getElementById("password").value;
 
-                    // FastAPI's OAuth2PasswordRequestForm requires form-urlencoded format
+                    // FastAPI expects OAuth2 form data
                     const formData = new URLSearchParams();
-                    formData.append("username", email);   // FastAPI uses "username" for OAuth2
+                    formData.append("username", email);    // FastAPI expects "username"
                     formData.append("password", password);
 
-                    const endpoint = "http://127.0.0.1:8000/token";
+                    const endpoint = "http://127.0.0.1:8000/user/token";
 
                     try {
+                        // Step 1: Get token
                         const response = await fetch(endpoint, {
                             method: "POST",
                             headers: {
@@ -67,15 +68,29 @@
 
                         if (response.ok) {
                             const data = await response.json();
-                            const accessToken = data.access_token;  // JWT token from FastAPI response
+                            const accessToken = data.access_token;
 
-                            // ✅ Store the token in localStorage or sessionStorage for future requests
+                            // ✅ Store the token in localStorage
                             localStorage.setItem("access_token", accessToken);
 
-                            // ✅ Redirect to "useraccount.html"
-                            window.location.href = "useraccount.html";
+                            // Step 2: Get the current user info using /users/me
+                            const userResponse = await fetch("http://127.0.0.1:8000/user/users/me", {
+                                method: "GET",
+                                headers: {
+                                    "Authorization": `Bearer ${accessToken}`
+                                }
+                            });
+
+                            if (userResponse.ok) {
+                                const userData = await userResponse.json();
+                                console.log("User Info:", userData);
+
+                                // ✅ Redirect to useraccount.html
+                                window.location.href = "useraccount.html";
+                            } else {
+                                alert("Failed to retrieve user info.");
+                            }
                         } else {
-                            // ❌ Login failed - Show popup message
                             alert("Login failed: Incorrect username or password.");
                         }
                     } catch (error) {
