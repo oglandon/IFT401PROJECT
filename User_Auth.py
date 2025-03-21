@@ -66,7 +66,7 @@ class Token(BaseModel):
     token_type: str
 
 # OAuth2 Config
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
 
 # Helper Functions
 def get_db():
