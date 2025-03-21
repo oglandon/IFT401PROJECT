@@ -28,10 +28,10 @@
                 <h2>Insert Admin Credentials.</h2>
                 <form id="adminloginform">
                     <label for="email"></label>
-                    <input type="text" id="email" required placeholder="Email">
+                    <input type="text" id="email" name="email" required placeholder="Email">
 
                     <label for="password"></label>
-                    <input type="password" id="password" required placeholder="Password">
+                    <input type="password" id="password" name="password" required placeholder="Password">
 
                     <button type="submit">Login</button>
                 </form>
@@ -47,4 +47,35 @@
                     event.preventDefault(); 
                     window.location.replace("adminaccount.html"); 
                 };
+            </script>
+            <script>
+                document.getElementById("adminloginform").addEventListener("submit", async function(event) {
+                    event.preventDefault();
+            
+                    const email = document.getElementById("email").value;
+                    const password = document.getElementById("password").value;
+            
+                    const endpoint = "http://127.0.0.1:8000/user/token";
+            
+                    try {
+                        const response = await fetch(endpoint, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ email: email, password: password })
+                        });
+            
+                        if (response.ok) {
+             
+                            window.location.href = "useraccount.html";
+                        } else {
+       
+                            alert("Login failed: Invalid email or password.");
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        alert("An error occurred while logging in.");
+                    }
+                });
             </script>
