@@ -4,7 +4,6 @@
         <title>Proton Trading</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="styles.css">
-        <link rel="stylesheet" href="adminuserlogin.css">
     </head>
     
     <body>
@@ -24,25 +23,3 @@
                 </section>
             </header>
 
-        <div class="user-login">
-            <h2>Insert User Credentials.</h2>
-            <form id="userloginform">
-                <label for="email"></label>
-                <input type="text" id="email" required placeholder="Email">
-                <label for="password"></label>
-                <input type="password" id="password" required placeholder="Password">
-                <button type="submit">Login</button>
-            </form>
-        </div>
-
-        <script>
-            window.onload = function() {
-                document.getElementById("userloginform").reset();
-            };
-        </script>
-        <script>
-            document.getElementById("userloginform").onsubmit = function(event) {
-                event.preventDefault(); 
-                window.location.replace("useraccount.html"); 
-            };
-        </script>

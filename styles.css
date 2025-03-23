@@ -6,16 +6,38 @@ body {
     text-align: center;
 }
 
+.video_container {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 15%;
+}
+
 .protontypeface {
     display: grid;
     place-items: center;
+    z-index: 2;
+    position: relative;
+    padding-top: 180px;
 }
 
 .protontypeface img{
-    width: 800px;
+    width: 960px;
     height: 260px;
     display: grid;
     place-items: center;
+    z-index: 2;
+    position: relative;
 }
 
 nav ul li .logo {
@@ -34,6 +56,4 @@ nav ul li {
 li a { 
     text-decoration: none; color:#549BCC; 
 }
-
-
 /*all pages ^*/
