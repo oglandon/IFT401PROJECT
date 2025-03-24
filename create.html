@@ -62,6 +62,8 @@
                     is_admin: document.getElementById('is_admin').value === "true"
                 };
 
+                console.log("Sending the following data to the server:", formData);
+
                 fetch('http://127.0.0.1:8000/user/register', {
                     method: 'POST',
                     headers: {
@@ -71,7 +73,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.username) {  // Assuming your API returns a 'username' in the response
+                    if (data && data.username) {  // Check if the response has the username field (successful creation)
                         alert('Account created successfully!');
                     } else {
                         alert('Failed to create account!');
