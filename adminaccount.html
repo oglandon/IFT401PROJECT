@@ -96,6 +96,16 @@
                 
         </div>
 
+        <button onclick="logout()">Logout</button>
+
+        <script>
+            // Logout function to clear localStorage and redirect to login page
+            function logout() {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('adminData');
+                window.location.href = 'admin.html';
+            }
+        </script>
         <script>
             window.onload = function() {
                 document.getElementById("markethours").reset();
