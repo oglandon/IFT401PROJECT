@@ -29,13 +29,13 @@
             <h2>Create A Stock</h2>
                 <form id="newstock" method="POST" action="http://127.0.0.1:8000/stocks/stocks">
                     <label for="company_name"></label>
-                    <input type="text" id="company" required placeholder="Company Name">
+                    <input type="text" id="company" name="company_name" required placeholder="Company Name">
                     <label for="ticker"></label>
-                    <input type="text" id="ticker" required placeholder="Ticker Symbol">
+                    <input type="text" id="ticker" name="ticket" required placeholder="Ticker Symbol">
                     <label for="volume"></label>
-                    <input type="number" id="volume" required placeholder="Volume">
+                    <input type="number" id="volume" name="volume" required placeholder="Volume">
                     <label for="initial_price"></label>
-                    <input type="number" step="any" id="price" required placeholder="Initial Price">
+                    <input type="number" step="any" id="price" name="initial_price" required placeholder="Initial Price">
                     <button type="submit">Create</button>
                 </form>
         </div>
