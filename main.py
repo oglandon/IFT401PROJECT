@@ -18,10 +18,19 @@ from fastapi.middleware.cors import CORSMiddleware
 # FastAPI
 app = FastAPI(title="Proton Stock Trading System API")
 
+origins = [
+    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/",  # All our pages
+    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/about.html",
+    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/watchlist.html",
+    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/create.html",
+    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/admin.html",
+    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/user.html",
+    "http://localhost:3000",  # Keep for local testing
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace with frontend domain(s) for security if we want
+    allow_origins=origins,  
     allow_credentials=True,
     allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allows all headers
