@@ -49,15 +49,15 @@
                     const email = document.getElementById("email").value;
                     const password = document.getElementById("password").value;
 
-                    // FastAPI expects OAuth2 form data
+
                     const formData = new URLSearchParams();
-                    formData.append("username", email);    // FastAPI expects "username"
+                    formData.append("username", email);   
                     formData.append("password", password);
 
                     const endpoint = "http://127.0.0.1:8000/user/token";
 
                     try {
-                        // Step 1: Get token
+                
                         const response = await fetch(endpoint, {
                             method: "POST",
                             headers: {
@@ -70,10 +70,10 @@
                             const data = await response.json();
                             const accessToken = data.access_token;
 
-                            // ✅ Store the token in localStorage
+            
                             localStorage.setItem("access_token", accessToken);
 
-                            // Step 2: Get the current user info using /users/me
+                           
                             const userResponse = await fetch("http://127.0.0.1:8000/user/users/me", {
                                 method: "GET",
                                 headers: {
@@ -85,8 +85,8 @@
                                 const userData = await userResponse.json();
                                 console.log("User Info:", userData);
 
-                                // ✅ Redirect to useraccount.html
-                                window.location.href = "useraccount.html";
+                    
+                                window.location.href = "adminaccount.html";
                             } else {
                                 alert("Failed to retrieve user info.");
                             }
