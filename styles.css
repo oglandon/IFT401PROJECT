@@ -56,4 +56,8 @@ nav ul li {
 li a { 
     text-decoration: none; color:#549BCC; 
 }
+
+h2, h1, h3 {
+    color: #549BCC;
+}
 /*all pages ^*/

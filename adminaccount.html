@@ -46,26 +46,32 @@
 
         <div class="update-hours">
             <h2>Update Market Hours</h2>
-                <form id="markethours" method="POST" action="markethours.cz08cemoiob0.us-east-2.rds.amazonaws.com">
-                    <label for="newhours" id="newhours">New Hours:</label><br>
-                    <select name="weekday" id="weekday">
-                            <option disabled selected>Start Weekday & Time</option>
-                            <option> Monday </option>
-                            <option> Tuesday </option>
-                            <option> Wednesday </option>
-                            <option> Thursday </option>
-                            <option> Friday </option>
+                <h3>New Hours:</h3>
+                <form id="markethours" method="PATCH" action='http://127.0.0.1:8000/market/market/hours'>
+                    <select id="weekday">
+                        <option disabled selected>Select Weekday</option>
+                        <option value="0"> Monday </option>
+                        <option value="1"> Tuesday </option>
+                        <option value="2"> Wednesday </option>
+                        <option value="3"> Thursday </option>
+                        <option value="4"> Friday </option>
                     </select>
-                    <input type="time" id="time" name="time" min="12:00" max="11:59" required>
-                    <select name="weekday" id="weekday">
-                        <option disabled selected>End Weekday & Time</option>
-                        <option> Monday </option>
-                        <option> Tuesday </option>
-                        <option> Wednesday </option>
-                        <option> Thursday </option>
-                        <option> Friday </option>
+                    <select id="openclosed">
+                        <option disabled selected>Open or Closed?</option>
+                        <option value="true"> Open </option>
+                        <option value="false"> Closed </option>
                     </select>
-                    <input type="time" id="time" name="time" min="12:00" max="11:59" required>
+                    <div class="time-inputs">
+                        <div class="opening-time">
+                            <label for="openingtime" id="openingtimelabel">Opening Time</label><br>
+                            <input type="text" id="openingtime" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
+                        </div>
+                    
+                        <div class="closing-time">
+                            <label for="closingtime" id="closingtimelabel">Closing Time</label><br>
+                            <input type="text" id="closingtime" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
+                        </div>
+                    </div>
                     <button type="submit">Submit</button>
                 </form>
         </div>
@@ -133,5 +139,42 @@
                     console.error('Error:', error);
                     alert('Failed to create stock. Check the console for details.');
                 }
+            });
+        </script>
+        <script>
+            document.getElementById('markethours').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Capture form data
+                const weekday = document.getElementById('weekday').value;
+                const openclosed = document.getElementById('openclosed').value;
+                const openingTime = document.getElementById('openingtime').value;
+                const closingTime = document.getElementById('closingtime').value;
+
+                // Create the JSON object
+                const formData = {
+                    weekday: weekday,
+                    openclosed: openclosed,
+                    opening_time: openingTime,
+                    closing_time: closingTime
+                };
+
+                // Send the data as JSON via PATCH request using fetch
+                fetch('http://127.0.0.1:8000/market/market/hours', {
+                    method: 'PATCH', // Using PATCH as per your form method
+                    headers: {
+                        'Content-Type': 'application/json' // Tell the server we're sending JSON
+                    },
+                    body: JSON.stringify(formData) // Convert the data to JSON
+                })
+                .then(response => response.json()) // Parse the JSON response
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('Market hours updated successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error updating the market hours.');
+                });
             });
         </script>
