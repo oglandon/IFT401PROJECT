@@ -27,15 +27,15 @@
         <h1>Admin Account.</h1>
         <div class="stock-creation">
             <h2>Create A Stock</h2>
-                <form id="newstock" method="POST" action="stockcreation.cz08cemoiob0.us-east-2.rds.amazonaws.com">
-                    <label for="company"></label>
+                <form id="newstock" method="POST" action="http://127.0.0.1:8000/stocks/stocks">
+                    <label for="company_name"></label>
                     <input type="text" id="company" required placeholder="Company Name">
                     <label for="ticker"></label>
                     <input type="text" id="ticker" required placeholder="Ticker Symbol">
                     <label for="volume"></label>
-                    <input type="text" id="volume" required placeholder="Volume">
-                    <label for="price"></label>
-                    <input type="text" id="price" required placeholder="Initial Price">
+                    <input type="number" id="volume" required placeholder="Volume">
+                    <label for="initial_price"></label>
+                    <input type="number" step="any" id="price" required placeholder="Initial Price">
                     <button type="submit">Create</button>
                 </form>
         </div>
