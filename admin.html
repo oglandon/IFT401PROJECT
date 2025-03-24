@@ -43,7 +43,7 @@
                 };
             </script>
             <script>
-                    async function loginUser(username, password) {
+                async function loginUser(username, password) {
                     const loginEndpoint = 'http://127.0.0.1:8000/user/token';
                     
                     try {
@@ -96,7 +96,12 @@
                         if (response.ok) {
                             const data = await response.json();
                             console.log('Admin data:', data);  // Successfully accessed the admin resource
-                            alert('Welcome, Admin!');
+                            
+                            // Store user/admin data in localStorage or sessionStorage
+                            localStorage.setItem('adminData', JSON.stringify(data));
+
+                            // Redirect to the admin account page
+                            window.location.href = 'adminaccount.html';
                         } else if (response.status === 403) {
                             alert('You do not have admin privileges!');
                         } else {
