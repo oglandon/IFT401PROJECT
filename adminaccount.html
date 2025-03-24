@@ -27,17 +27,21 @@
         <h1>Admin Account.</h1>
         <div class="stock-creation">
             <h2>Create A Stock</h2>
-                <form id="newstock" method="POST" action="http://127.0.0.1:8000/stocks/stocks">
-                    <label for="company_name"></label>
-                    <input type="text" id="company" name="company_name" required placeholder="Company Name">
-                    <label for="ticker"></label>
-                    <input type="text" id="ticker" name="ticket" required placeholder="Ticker Symbol">
-                    <label for="volume"></label>
-                    <input type="number" id="volume" name="volume" required placeholder="Volume">
-                    <label for="initial_price"></label>
-                    <input type="number" step="any" id="price" name="initial_price" required placeholder="Initial Price">
-                    <button type="submit">Create</button>
-                </form>
+            <form id="newstock">
+                <label for="company_name"></label>
+                <input type="text" id="company" name="company_name" required placeholder="Company Name">
+        
+                <label for="ticker"></label>
+                <input type="text" id="ticker" name="ticker" required placeholder="Ticker Symbol">
+        
+                <label for="volume"></label>
+                <input type="number" id="volume" name="volume" required placeholder="Volume">
+        
+                <label for="initial_price"></label>
+                <input type="number" step="any" id="price" name="initial_price" required placeholder="Initial Price">
+        
+                <button type="submit">Create</button>
+            </form>
         </div>
 
         <div class="update-hours">
@@ -94,4 +98,40 @@
                 document.getElementById("trade").reset();
             };
         </script>
- 
+        <script>
+            document.getElementById('newstock').addEventListener('submit', async (event) => {
+                event.preventDefault();  // Prevents the default form submission
+
+                // Gather form data
+                const formData = new FormData(event.target);
+                
+                // Create JSON object
+                const data = {
+                    company_name: formData.get('company_name'),
+                    ticker: formData.get('ticker'),
+                    volume: parseInt(formData.get('volume')),
+                    initial_price: parseFloat(formData.get('initial_price'))
+                };
+
+                try {
+                    const response = await fetch('http://127.0.0.1:8000/stocks', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert(`Stock created successfully: ${JSON.stringify(result)}`);
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Error: ${errorData.detail}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to create stock. Check the console for details.');
+                }
+            });
+        </script>
