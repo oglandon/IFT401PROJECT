@@ -60,7 +60,7 @@
                         const response = await fetch(loginEndpoint, {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',  // Set the content type to URL encoded
+                                'Content-Type': 'application/x-www-form-urlencoded',
                             },
                             body: new URLSearchParams({
                                 'username': username,
@@ -74,8 +74,11 @@
                             localStorage.setItem('accessToken', accessToken);  // Store token for future use
                             alert('Login successful!');
                             
-                            // Now, try to access the admin resource
-                            await accessAdminResource();
+                            // Now, pull the user data (like username and email)
+                            await fetchUserData(accessToken);
+                            
+                            // Now, verify if the user is an admin
+                            await checkAdminStatus(accessToken);
                         } else {
                             alert('Invalid credentials!');
                             throw new Error('Authentication failed');
@@ -85,33 +88,52 @@
                     }
                 }
 
-                async function accessAdminResource() {
-                    const adminEndpoint = 'http://127.0.0.1:8000/user/admin-only';
-                    const token = localStorage.getItem('accessToken');  // Retrieve token from local storage
-
-                    if (!token) {
-                        alert('You need to log in first!');
-                        return;
-                    }
-
+                async function fetchUserData(accessToken) {
+                    const userEndpoint = 'http://127.0.0.1:8000/user/users/me';  // Endpoint to fetch user data
+                    
                     try {
-                        // Send GET request to the /admin-only endpoint with the token in the Authorization header
-                        const response = await fetch(adminEndpoint, {
+                        const response = await fetch(userEndpoint, {
                             method: 'GET',
                             headers: {
-                                'Authorization': `Bearer ${token}`,  // Attach the token for authorization
+                                'Authorization': `Bearer ${accessToken}`  // Attach the token for authorization
                             }
                         });
 
                         if (response.ok) {
-                            const data = await response.json();
-                            console.log('Admin data:', data);  // Successfully accessed the admin resource
-                            
-                            // Store user/admin data in localStorage or sessionStorage
-                            localStorage.setItem('adminData', JSON.stringify(data));
+                            const userData = await response.json();
+                            console.log('User data:', userData);  // Successfully retrieved user data
 
-                            // Redirect to the admin account page
-                            window.location.href = 'adminaccount.html';
+                            // Store user data in localStorage or sessionStorage for use in the frontend
+                            localStorage.setItem('userData', JSON.stringify(userData));  // Store user data
+                        } else {
+                            console.error('Failed to fetch user data:', response.status);
+                            alert('Failed to retrieve user data!');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching user data:', error);
+                    }
+                }
+
+                async function checkAdminStatus(accessToken) {
+                    const adminEndpoint = 'http://127.0.0.1:8000/user/admin-only';
+                    
+                    try {
+                        const response = await fetch(adminEndpoint, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`  // Attach the token for authorization
+                            }
+                        });
+
+                        if (response.ok) {
+                            const adminData = await response.json();
+                            console.log('Admin data:', adminData);  // Successfully accessed the admin resource
+                            
+                            // Store admin data in localStorage or sessionStorage
+                            localStorage.setItem('adminData', JSON.stringify(adminData));
+
+                            // Redirect to the admin account page or perform admin-specific actions
+                            window.location.href = 'adminaccount.html';  // This can be your admin dashboard or page
                         } else if (response.status === 403) {
                             alert('You do not have admin privileges!');
                         } else {
