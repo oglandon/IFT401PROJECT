@@ -36,7 +36,16 @@
                     <button type="submit">Login</button>
                 </form>
             </div>
-
+            <script>
+                document.getElementById("adminloginform").addEventListener("submit", async function(event) {
+                    event.preventDefault();  // Prevent the default form submission
+                    const username = document.getElementById("username").value;
+                    const password = document.getElementById("password").value;
+            
+                    // Call the loginUser function with the username and password
+                    await loginUser(username, password);
+                });
+            </script>
             <script>
                 window.onload = function() {
                     document.getElementById("adminloginform").reset();
@@ -45,13 +54,13 @@
             <script>
                 async function loginUser(username, password) {
                     const loginEndpoint = 'http://127.0.0.1:8000/user/token';
-                    
+
                     try {
                         // Send POST request to /token endpoint to get the JWT token
                         const response = await fetch(loginEndpoint, {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'Content-Type': 'application/json',
                             },
                             body: new URLSearchParams({
                                 'username': username,
@@ -64,7 +73,9 @@
                             const accessToken = data.access_token;  // Extract token from response
                             localStorage.setItem('accessToken', accessToken);  // Store token for future use
                             alert('Login successful!');
-                            return accessToken;  // Return the token
+                            
+                            // Now, try to access the admin resource
+                            await accessAdminResource();
                         } else {
                             alert('Invalid credentials!');
                             throw new Error('Authentication failed');
@@ -74,7 +85,6 @@
                     }
                 }
 
-                // Function to access the admin-only resource (check admin privileges)
                 async function accessAdminResource() {
                     const adminEndpoint = 'http://127.0.0.1:8000/user/admin-only';
                     const token = localStorage.getItem('accessToken');  // Retrieve token from local storage
