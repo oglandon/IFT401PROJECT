@@ -111,19 +111,4 @@
                         console.error('Error accessing admin resource:', error);
                     }
                 }
-
-                // Example usage:
-                document.getElementById('adminloginform').addEventListener('submit', async (event) => {
-                    event.preventDefault();
-
-                    const username = document.getElementById('username').value;
-                    const password = document.getElementById('password').value;
-
-                    const token = await loginUser(username, password);
-
-                    if (token) {
-                        // After successful login, try to access the admin resource
-                        await accessAdminResource();
-                    }
-                });
             </script>
