@@ -74,7 +74,7 @@
                             localStorage.setItem("access_token", accessToken);
 
                            
-                            const userResponse = await fetch("http://127.0.0.1:8000/user/users/me", {
+                            const userResponse = await fetch("http://127.0.0.1:8000/user/admin-only", {
                                 method: "GET",
                                 headers: {
                                     "Authorization": `Bearer ${accessToken}`
