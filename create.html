@@ -71,11 +71,14 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (response.ok) {
+                    if (data && data.username) {  // Assuming your API returns a 'username' in the response
                         alert('Account created successfully!');
                     } else {
                         alert('Failed to create account!');
                     }
+                })
+                .catch(error => {
+                    alert('An error occurred: ' + error.message);
                 });
             });
         </script>
