@@ -129,14 +129,14 @@
                 };
 
                 // ✅ Retrieve the JWT token from localStorage or sessionStorage
-                const token = localStorage.getItem('accessToken');  // Ensure the key name matches where you stored the token
-                console.log("Token being sent:", token);  // Debugging line
+                const accessToken = localStorage.getItem('accessToken');  // Ensure the key name matches where you stored the token
+                console.log("accessToken being sent:", accessToken);  // Debugging line
 
                 // ⚠️ Check if token exists before making the request
-                if (!token) {
-                    alert('No JWT token found. Please log in.');
-                    console.error('No JWT token found. Please log in.');
-                    return;  // Stop the request if there's no token
+                if (!accessToken) {
+                    alert('No JWT accessToken found. Please log in.');
+                    console.error('No JWT accessToken found. Please log in.');
+                    return;  // Stop the request if there's no accessToken
                 }
 
                 try {
