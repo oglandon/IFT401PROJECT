@@ -106,6 +106,7 @@
                 window.location.href = 'admin.html';
             }
         </script>
+
         <script>
             window.onload = function() {
                 document.getElementById("markethours").reset();
@@ -120,7 +121,7 @@
 
                 // Gather form data
                 const formData = new FormData(event.target);
-                
+
                 // Create JSON object
                 const data = {
                     company_name: formData.get('company_name'),
@@ -129,11 +130,15 @@
                     initial_price: parseFloat(formData.get('initial_price'))
                 };
 
+                // Retrieve the JWT token from local storage or cookies
+                const token = localStorage.getItem('accessToken');
+
                 try {
                     const response = await fetch('http://127.0.0.1:8000/stocks/stocks', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`  // Include the JWT token
                         },
                         body: JSON.stringify(data)
                     });
