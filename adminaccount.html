@@ -130,15 +130,22 @@
                     initial_price: parseFloat(formData.get('initial_price'))
                 };
 
-                // Retrieve the JWT token from local storage or cookies
-                const token = localStorage.getItem('accessToken');
+                // ✅ Retrieve the JWT token from localStorage or sessionStorage
+                const token = localStorage.getItem('token');  // Ensure the key name matches where you stored the token
+
+                // ⚠️ Check if token exists before making the request
+                if (!token) {
+                    alert('No JWT token found. Please log in.');
+                    console.error('No JWT token found. Please log in.');
+                    return;  // Stop the request if there's no token
+                }
 
                 try {
                     const response = await fetch('http://127.0.0.1:8000/stocks/stocks', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`  // Include the JWT token
+                            'Authorization': `Bearer ${token}`  // Include JWT token in the header
                         },
                         body: JSON.stringify(data)
                     });
@@ -146,9 +153,11 @@
                     if (response.ok) {
                         const result = await response.json();
                         alert(`Stock created successfully: ${JSON.stringify(result)}`);
+                        console.log('Response:', result);
                     } else {
                         const errorData = await response.json();
-                        alert(`Error: ${errorData.detail}`);
+                        console.error('Error:', errorData);
+                        alert(`Error: ${errorData.detail || 'Failed to create stock.'}`);
                     }
                 } catch (error) {
                     console.error('Error:', error);
