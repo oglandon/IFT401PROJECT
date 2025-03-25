@@ -23,13 +23,24 @@
                     </nav>
                 </section>
             </header>
-        
+
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        // Logout function to clear localStorage and redirect to login page
+        function logout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('adminData');
+            window.location.href = 'admin.html';
+        }
+    </script>
+
         <h1>Admin Account.</h1>
         <div class="stock-creation">
             <h2>Create A Stock</h2>
             <form id="newstock">
                 <label for="company_name"></label>
-                <input type="text" id="company" name="company_name" required placeholder="Company Name">
+                <input type="text" id="company_name" name="company_name" required placeholder="Company Name">
         
                 <label for="ticker"></label>
                 <input type="text" id="ticker" name="ticker" required placeholder="Ticker Symbol">
@@ -38,81 +49,12 @@
                 <input type="number" id="volume" name="volume" required placeholder="Volume">
         
                 <label for="initial_price"></label>
-                <input type="number" step="any" id="price" name="initial_price" required placeholder="Initial Price">
+                <input type="number" step="any" id="initial_price" name="initial_price" required placeholder="Initial Price">
         
                 <button type="submit">Create</button>
             </form>
         </div>
 
-        <div class="update-hours">
-            <h2>Update Market Hours</h2>
-                <h3>New Hours:</h3>
-                <form id="markethours" method="PATCH" action='http://127.0.0.1:8000/market/market/hours'>
-                    <select id="weekday">
-                        <option disabled selected>Select Weekday</option>
-                        <option value="0"> Monday </option>
-                        <option value="1"> Tuesday </option>
-                        <option value="2"> Wednesday </option>
-                        <option value="3"> Thursday </option>
-                        <option value="4"> Friday </option>
-                    </select>
-                    <select id="openclosed">
-                        <option disabled selected>Open or Closed?</option>
-                        <option value="true"> Open </option>
-                        <option value="false"> Closed </option>
-                    </select>
-                    <div class="time-inputs">
-                        <div class="opening-time">
-                            <label for="openingtime" id="openingtimelabel">Opening Time</label><br>
-                            <input type="text" id="openingtime" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
-                        </div>
-                    
-                        <div class="closing-time">
-                            <label for="closingtime" id="closingtimelabel">Closing Time</label><br>
-                            <input type="text" id="closingtime" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
-                        </div>
-                    </div>
-                    <button type="submit">Submit</button>
-                </form>
-        </div>
-
-        <div class="portfolio">
-            <h2>Your Portfolio</h2>
-
-        </div>
-
-        <div class="history">
-            <h2>Transaction History</h2>
-                
-        </div>
-
-        <div class="funds">
-            <h2>Account Funds</h2>
-                
-        </div>
-
-        <div class="trade">
-            <h2>Trade Stocks</h2>
-                
-        </div>
-
-        <button onclick="logout()">Logout</button>
-
-        <script>
-            // Logout function to clear localStorage and redirect to login page
-            function logout() {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('adminData');
-                window.location.href = 'admin.html';
-            }
-        </script>
-
-        <script>
-            window.onload = function() {
-                document.getElementById("update-hours").reset();
-                document.getElementById("markethours").reset();
-            };
-        </script>
         <script>
             document.getElementById('newstock').addEventListener('submit', async (event) => {
                 event.preventDefault();  // Prevents the default form submission
@@ -164,3 +106,55 @@
                 }
             });
         </script>
+
+<div class="update-hours">
+    <h2>Update Market Hours</h2>
+        <h3>New Hours:</h3>
+        <form id="markethours" method="PATCH" action='http://127.0.0.1:8000/market/market/hours'>
+            <select id="weekday">
+                <option disabled selected>Select Weekday</option>
+                <option value="0"> Monday </option>
+                <option value="1"> Tuesday </option>
+                <option value="2"> Wednesday </option>
+                <option value="3"> Thursday </option>
+                <option value="4"> Friday </option>
+            </select>
+            <select id="openclosed">
+                <option disabled selected>Open or Closed?</option>
+                <option value="true"> Open </option>
+                <option value="false"> Closed </option>
+            </select>
+            <div class="time-inputs">
+                <div class="opening-time">
+                    <label for="openingtime" id="openingtimelabel">Opening Time</label><br>
+                    <input type="text" id="openingtime" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
+                </div>
+            
+                <div class="closing-time">
+                    <label for="closingtime" id="closingtimelabel">Closing Time</label><br>
+                    <input type="text" id="closingtime" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
+                </div>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+</div>
+
+<div class="portfolio">
+    <h2>Your Portfolio</h2>
+
+</div>
+
+<div class="history">
+    <h2>Transaction History</h2>
+        
+</div>
+
+<div class="funds">
+    <h2>Account Funds</h2>
+        
+</div>
+
+<div class="trade">
+    <h2>Trade Stocks</h2>
+        
+</div>
