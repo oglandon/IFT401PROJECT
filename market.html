@@ -4,6 +4,7 @@
         <title>Proton Trading</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="market.css">
     </head>
     
     <body>
@@ -23,3 +24,60 @@
                 </section>
             </header>
 
+        <div id="market">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Ticker</th>
+                        <th>Volume</th>
+                        <th>Initial Price</th>
+                        <th>Current Price</th>
+                        <th>Market Cap</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            async function fetchAllStocks() {
+                    const apiUrl = 'http://127.0.0.1:8000/stocks/stocks';
+
+                    try {
+                        const response = await fetch(apiUrl);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch stock data: ${response.status}`);
+                        }
+
+                        const stocks = await response.json();
+                        const tableBody = document.querySelector("#market tbody");
+                        tableBody.innerHTML = "";
+
+                        stocks.forEach(stock => {
+                            const priceClass = stock.price >= stock.initial_price ? 'price-up' : 'price-down';
+                            const dailyHighClass = stock.daily_high >= stock.price ? 'daily-high' : '';
+                            const dailyLowClass = stock.daily_low <= stock.price ? 'daily-low' : '';
+
+                            const row = `
+                                <tr>
+                                    <td>${stock.company_name}</td>
+                                    <td>${stock.ticker}</td>
+                                    <td>${stock.volume}</td>
+                                    <td>$${stock.initial_price.toFixed(2)}</td>
+                                    <td class="${priceClass}">$${stock.price.toFixed(2)}</td>
+                                    <td class="market-cap">$${stock.market_cap.toFixed(2)}</td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
+                        });
+
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert(`Error loading stock data: ${error.message}`);
+                    }
+                }
+            window.onload = fetchAllStocks;
+        </script>
