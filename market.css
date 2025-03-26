@@ -8,7 +8,7 @@ th {
 
 table {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     border-collapse: collapse;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -47,13 +47,13 @@ tbody tr:nth-child(even) {
 
 tbody tr:hover {
     background-color: black;
-    transform: scale(1.02);   
+    transform: scale(1.012);   
     transition: all 0.3s ease;
 }
 
 
 td {
-    padding: 14px;
+    padding: 16px;
     font-size: 15px;
     text-align: left;
     color: white;
