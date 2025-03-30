@@ -199,7 +199,7 @@
             <h2>Account Funds</h2>
                 <h3>Deposit Funds</h3>
                 <form id="deposit-form">
-                    <label for="deposit-amount">Amount to Deposit:</label>
+                    <label for="deposit-amount-label">Amount to Deposit:</label>
                     <input type="number" id="deposit-amount" name="amount" min="0" step="any" required>
                     <button type="submit">Deposit</button>
                 </form>
@@ -207,7 +207,7 @@
                 <!-- Withdrawal Form -->
                 <h3 id="withdraw">Withdraw Funds</h3>
                 <form id="withdraw-form">
-                    <label for="withdraw-amount">Amount to Withdraw:</label>
+                    <label for="withdraw-amount-label">Amount to Withdraw:</label>
                     <input type="number" id="withdraw-amount" name="amount" min="0" step="any" required>
                     <button type="submit">Withdraw</button>
                 </form>
@@ -222,19 +222,6 @@
                         // You can now use this token for authenticated API requests
                     }         
 
-                    // Helper function to handle response
-                    function handleResponse(response) {
-                        const messageElement = document.getElementById('response-message');
-                        if (!response.ok) {
-                            messageElement.textContent = `Error: ${response.statusText}`;
-                            messageElement.className = 'response-message error';
-                        } else {
-                            return response.json().then(data => {
-                                messageElement.textContent = `${data.message} New balance: $${data.cash_balance}`;
-                                messageElement.className = 'response-message success';
-                            });
-                        }
-                    }
             
                     // Deposit Funds
                     document.getElementById('deposit-form').addEventListener('submit', async function(event) {
