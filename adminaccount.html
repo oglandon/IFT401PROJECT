@@ -112,8 +112,8 @@
         <div class="update-hours">
             <h2>Update Market Hours</h2>
                 <h3>New Hours:</h3>
-                <form id="markethours" method="PATCH" action='http://127.0.0.1:8000/market/market/hours'>
-                    <select id="weekday">
+                <form id="markethours">
+                    <select id="day_of_week" name="day_of_week">
                         <option disabled selected>Select Weekday</option>
                         <option value="0"> Monday </option>
                         <option value="1"> Tuesday </option>
@@ -121,20 +121,20 @@
                         <option value="3"> Thursday </option>
                         <option value="4"> Friday </option>
                     </select>
-                    <select id="openclosed">
+                    <select id="is_open" name="is_open">
                         <option disabled selected>Open or Closed?</option>
                         <option value="true"> Open </option>
                         <option value="false"> Closed </option>
                     </select>
                     <div class="time-inputs">
                         <div class="opening-time">
-                            <label for="openingtime" id="openingtimelabel">Opening Time</label><br>
-                            <input type="text" id="openingtime" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
+                            <label for="openingtimelabel" id="openingtimelabel">Opening Time</label><br>
+                            <input type="text" id="opening_time" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
                         </div>
                     
                         <div class="closing-time">
-                            <label for="closingtime" id="closingtimelabel">Closing Time</label><br>
-                            <input type="text" id="closingtime" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
+                            <label for="closingtimelabel" id="closingtimelabel">Closing Time</label><br>
+                            <input type="text" id="closing_time" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
                         </div>
                     </div>
                     <button type="submit">Submit</button>
@@ -142,19 +142,17 @@
         </div>
 
         <script>
-            document.getElementById('markethours-form').addEventListener('submit', async function(event) {
+            document.getElementById('markethours').addEventListener('submit', async function(event) {
                 event.preventDefault();
         
-                const token = localStorage.getItem('access_token');  // Retrieve token (if using local storage)
-                if (!token) {
-                    alert("Unauthorized: No token found.");
-                    return;
-                }
+
+                const accessToken = localStorage.getItem('accessToken'); 
+                console.log("accessToken being sent:", accessToken); 
         
-                const day_of_week = document.getElementById('weekday').value;
-                const is_open = document.getElementById('openclosed').value === "true";
-                const opening_time = document.getElementById('openingtime').value;
-                const closing_time = document.getElementById('closingtime').value;
+                const day_of_week = document.getElementById('day_of_week').value;
+                const is_open = document.getElementById('is_open').value === "true";
+                const opening_time = document.getElementById('opening_time').value;
+                const closing_time = document.getElementById('closing_time').value;
         
                 const data = {
                     day_of_week: parseInt(day_of_week),
@@ -162,13 +160,19 @@
                     opening_time: opening_time,
                     closing_time: closing_time
                 };
-        
+
+                if (!accessToken) {
+                    alert('No JWT accessToken found. Please log in.');
+                    console.error('No JWT accessToken found. Please log in.');
+                    return; 
+                }
+
                 try {
-                    const response = await fetch("http://127.0.0.1:8000/market/hours", {
+                    const response = await fetch("http://127.0.0.1:8000/market/market/hours", {
                         method: "PATCH",
                         headers: {
                             "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`  // Add JWT token
+                            "Authorization": `Bearer ${accessToken}`  // Add JWT token
                         },
                         body: JSON.stringify(data)
                     });
