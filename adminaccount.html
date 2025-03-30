@@ -202,14 +202,71 @@
             });
         </script>
 
-<div class="portfolio">
-    <h2>Your Portfolio</h2>
+<h1>User Portfolio</h1>
 
+<h2>Transaction History</h2>
+<table id="transaction-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ticker</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Transaction Type</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Transactions will be populated here -->
+    </tbody>
+</table>
+
+<h2>Portfolio</h2>
+<div id="portfolio">
+    <!-- Portfolio data will be populated here -->
 </div>
+<script>
+    // Function to fetch transaction history from the backend
+    async function fetchTransactions() {
+        const response = await fetch('/transactions');
+        const transactions = await response.json();
 
-<div class="history">
-    <h2>Transaction History</h2>
-        
+        const tableBody = document.querySelector('#transaction-table tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        transactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${transaction.id}</td>
+                <td>${transaction.ticker}</td>
+                <td>${transaction.quantity}</td>
+                <td>${transaction.price}</td>
+                <td>${transaction.transaction_type}</td>
+                <td>${transaction.timestamp}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Function to fetch portfolio data from the backend
+    async function fetchPortfolio() {
+        const response = await fetch('/portfolio');
+        const data = await response.json();
+        const portfolioDiv = document.getElementById('portfolio');
+        portfolioDiv.innerHTML = `<p>${data.portfolio}</p>`;
+    }
+
+    // Fetch data when the page loads
+    window.onload = function() {
+        fetchTransactions();
+        fetchPortfolio();
+    }
+</script>
+
+
+
+
+
 </div>
 
 <div class="funds">
