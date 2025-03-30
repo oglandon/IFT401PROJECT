@@ -142,6 +142,16 @@
         </div>
 
         <script>
+            const access_token = localStorage.getItem('access_token');
+            
+            if (!access_token) {
+                console.error("No access token found. Please log in.");
+                alert("You need to log in as an admin.");
+            } else {
+                console.log("Access Token:", access_token);  // Log it to make sure it's retrieved
+                // You can now use this token for authenticated API requests
+            }
+
                 async function loginUser(username, password) {
                 const loginEndpoint = 'http://127.0.0.1:8000/user/token';
 
