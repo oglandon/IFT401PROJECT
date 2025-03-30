@@ -29,7 +29,7 @@
     <script>
         // Logout function
         function logout() {
-            localStorage.removeItem('accessToken');
+            localStorage.removeItem('access_token');
             localStorage.removeItem('adminData');
             window.location.href = 'admin.html';
         }
@@ -72,13 +72,13 @@
                 };
 
              
-                const accessToken = localStorage.getItem('accessToken'); 
-                console.log("accessToken being sent:", accessToken);  
+                const access_token = localStorage.getItem('access_token'); 
+                console.log("access_token being sent:", access_token);  
 
             
-                if (!accessToken) {
-                    alert('No JWT accessToken found. Please log in.');
-                    console.error('No JWT accessToken found. Please log in.');
+                if (!access_token) {
+                    alert('No JWT access_token found. Please log in.');
+                    console.error('No JWT access_token found. Please log in.');
                     return; 
                 }
 
@@ -87,7 +87,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${accessToken}` 
+                            'Authorization': `Bearer ${access_token}` 
                         },
                         body: JSON.stringify(data)
                     });
@@ -142,14 +142,14 @@
         </div>
 
         <script>
-            async function checkAdminStatus(accessToken) {
+            async function checkAdminStatus(access_token) {
             const adminEndpoint = 'http://127.0.0.1:8000/user/admin-only';
                 
                 try {
                     const response = await fetch(adminEndpoint, {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${accessToken}`  // Attach the token for authorization
+                            'Authorization': `Bearer ${access_token}`  // Attach the token for authorization
                         }
                     });
 
@@ -187,12 +187,12 @@
                     closing_time: closing_time
                 };
 
-                const accessToken = localStorage.getItem('accessToken'); 
-                console.log("accessToken being sent:", accessToken);  
+                const access_token = localStorage.getItem('access_token'); 
+                console.log("access_token being sent:", access_token);  
 
-                if (!accessToken) {
-                    alert('No JWT accessToken found. Please log in.');
-                    console.error('No JWT accessToken found. Please log in.');
+                if (!access_token) {
+                    alert('No JWT access_token found. Please log in.');
+                    console.error('No JWT access_token found. Please log in.');
                     return; 
                 }
 
@@ -201,7 +201,7 @@
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${accessToken}` 
+                            'Authorization': `Bearer ${access_token}` 
                         },
                         body: JSON.stringify(data)
                     });

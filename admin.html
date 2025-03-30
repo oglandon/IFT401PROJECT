@@ -70,15 +70,15 @@
 
                         if (response.ok) {
                             const data = await response.json();
-                            const accessToken = data.access_token;  // Extract token from response
-                            localStorage.setItem('accessToken', accessToken);  // Store token for future use
+                            const access_token = data.access_token;  // Extract token from response
+                            localStorage.setItem('access_token', access_token);  // Store token for future use
                             alert('Login successful!');
                             
                             // Now, pull the user data (like username and email)
-                            await fetchUserData(accessToken);
+                            await fetchUserData(access_token);
                             
                             // Now, verify if the user is an admin
-                            await checkAdminStatus(accessToken);
+                            await checkAdminStatus(access_token);
                         } else {
                             alert('Invalid credentials!');
                             throw new Error('Authentication failed');
@@ -88,14 +88,14 @@
                     }
                 }
 
-                async function fetchUserData(accessToken) {
+                async function fetchUserData(access_token) {
                     const userEndpoint = 'http://127.0.0.1:8000/user/users/me';  // Endpoint to fetch user data
                     
                     try {
                         const response = await fetch(userEndpoint, {
                             method: 'GET',
                             headers: {
-                                'Authorization': `Bearer ${accessToken}`  // Attach the token for authorization
+                                'Authorization': `Bearer ${access_token}`  // Attach the token for authorization
                             }
                         });
 
@@ -114,14 +114,14 @@
                     }
                 }
 
-                async function checkAdminStatus(accessToken) {
+                async function checkAdminStatus(access_token) {
                     const adminEndpoint = 'http://127.0.0.1:8000/user/admin-only';
                     
                     try {
                         const response = await fetch(adminEndpoint, {
                             method: 'GET',
                             headers: {
-                                'Authorization': `Bearer ${accessToken}`  // Attach the token for authorization
+                                'Authorization': `Bearer ${access_token}`  // Attach the token for authorization
                             }
                         });
 
