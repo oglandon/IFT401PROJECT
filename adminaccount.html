@@ -122,12 +122,12 @@
                     <div class="time-inputs">
                         <div class="opening-time">
                             <label for="openingtimelabel" id="openingtimelabel">Opening Time</label><br>
-                            <input type="text" id="opening_time" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
+                            <input type="text" id="opening_time" name="opening_time" placeholder="Use 24hr time (eg 09:00) | If Closed, input 'N/A'" required>
                         </div>
                     
                         <div class="closing-time">
                             <label for="closingtimelabel" id="closingtimelabel">Closing Time</label><br>
-                            <input type="text" id="closing_time" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
+                            <input type="text" id="closing_time" name="closing_time" placeholder="Use 24hr time (eg 17:00) | If Closed, input 'N/A' "required>
                         </div>
                     </div>
                     <button type="submit">Submit</button>
@@ -192,6 +192,84 @@
                         }
                     });
                 </script>
+        </div>
+
+ <!-- FUNDS MANAGEMENT -->
+        <div class="funds">
+            <h2>Account Funds</h2>
+                <h3>Deposit Funds</h3>
+                <form id="deposit-form">
+                    <label for="deposit-amount">Amount to Deposit:</label>
+                    <input type="number" id="deposit-amount" name="amount" min="0" step="0.01" required>
+                    <button type="submit">Deposit</button>
+                </form>
+
+                <!-- Withdrawal Form -->
+                <h3 id="withdraw">Withdraw Funds</h3>
+                <form id="withdraw-form">
+                    <label for="withdraw-amount">Amount to Withdraw:</label>
+                    <input type="number" id="withdraw-amount" name="amount" min="0" step="0.01" required>
+                    <button type="submit">Withdraw</button>
+                </form>
+
+                <div class="response-message" id="response-message"></div>
+                <script>
+                    // Helper function to handle response
+                    function handleResponse(response) {
+                        const messageElement = document.getElementById('response-message');
+                        if (!response.ok) {
+                            messageElement.textContent = `Error: ${response.statusText}`;
+                            messageElement.className = 'response-message error';
+                        } else {
+                            return response.json().then(data => {
+                                messageElement.textContent = `${data.message} New balance: $${data.cash_balance}`;
+                                messageElement.className = 'response-message success';
+                            });
+                        }
+                    }
+            
+                    // Deposit Funds
+                    document.getElementById('deposit-form').addEventListener('submit', async function(event) {
+                        event.preventDefault();
+                        const amount = parseFloat(document.getElementById('deposit-amount').value);
+                        const token = localStorage.getItem('access_token');
+            
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount }),
+                        });
+            
+                        handleResponse(response);
+                    });
+            
+                    // Withdraw Funds
+                    document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
+                        event.preventDefault();
+                        const amount = parseFloat(document.getElementById('withdraw-amount').value);
+                        const token = localStorage.getItem('access_token');
+            
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount }),
+                        });
+            
+                        handleResponse(response);
+                    });
+                </script>
+        </div>
+
+ <!-- TRADE STOCKS -->
+        <div class="trade">
+            <h2>Trade Stocks</h2>
+                
         </div>
 
  <!-- TRANSACTION HISTORY -->
@@ -281,84 +359,6 @@
                 fetchPortfolio();
             }
             </script>
-        </div>
-
- <!-- FUNDS MANAGEMENT -->
-        <div class="funds">
-            <h2>Account Funds</h2>
-                <h3>Deposit Funds</h3>
-                <form id="deposit-form">
-                    <label for="deposit-amount">Amount to Deposit:</label>
-                    <input type="number" id="deposit-amount" name="amount" min="0" step="0.01" required>
-                    <button type="submit">Deposit</button>
-                </form>
-
-                <!-- Withdrawal Form -->
-                <h3>Withdraw Funds</h3>
-                <form id="withdraw-form">
-                    <label for="withdraw-amount">Amount to Withdraw:</label>
-                    <input type="number" id="withdraw-amount" name="amount" min="0" step="0.01" required>
-                    <button type="submit">Withdraw</button>
-                </form>
-
-                <div class="response-message" id="response-message"></div>
-                <script>
-                    // Helper function to handle response
-                    function handleResponse(response) {
-                        const messageElement = document.getElementById('response-message');
-                        if (!response.ok) {
-                            messageElement.textContent = `Error: ${response.statusText}`;
-                            messageElement.className = 'response-message error';
-                        } else {
-                            return response.json().then(data => {
-                                messageElement.textContent = `${data.message} New balance: $${data.cash_balance}`;
-                                messageElement.className = 'response-message success';
-                            });
-                        }
-                    }
-            
-                    // Deposit Funds
-                    document.getElementById('deposit-form').addEventListener('submit', async function(event) {
-                        event.preventDefault();
-                        const amount = parseFloat(document.getElementById('deposit-amount').value);
-                        const token = localStorage.getItem('access_token');
-            
-                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ amount }),
-                        });
-            
-                        handleResponse(response);
-                    });
-            
-                    // Withdraw Funds
-                    document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
-                        event.preventDefault();
-                        const amount = parseFloat(document.getElementById('withdraw-amount').value);
-                        const token = localStorage.getItem('access_token');
-            
-                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ amount }),
-                        });
-            
-                        handleResponse(response);
-                    });
-                </script>
-        </div>
-
- <!-- TRADE STOCKS -->
-        <div class="trade">
-            <h2>Trade Stocks</h2>
-                
         </div>
 
  <!-- LOGOUT BUTTON -->

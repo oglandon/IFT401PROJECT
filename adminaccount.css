@@ -34,7 +34,7 @@ button {
     background-color: #549BCC;
     color: black;
     padding: 5px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -67,4 +67,14 @@ label {
 #opening_time, #closing_time {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+#response-message {
+    color: #549BCC;
+    margin-top: -85px;
+    margin-bottom: 60px;
+}
+
+#withdraw {
+    margin-top: -80px;
 }
