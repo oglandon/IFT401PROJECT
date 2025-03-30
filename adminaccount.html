@@ -8,6 +8,7 @@
     </head>
     
     <body>
+ <!-- NAVIGATE BAR -->
         <div id="wrapper">
             <header>
                 <section id="top_bar">
@@ -23,19 +24,11 @@
                     </nav>
                 </section>
             </header>
-
-    <button onclick="logout()">Logout</button>
-
-    <script>
-        // Logout function
-        function logout() {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('adminData');
-            window.location.href = 'admin.html';
-        }
-    </script>
+        </div>
 
         <h1>Admin Account.</h1>
+
+<!-- STOCK CREATION -->
         <div class="stock-creation">
             <h2>Create A Stock</h2>
             <form id="newstock">
@@ -53,14 +46,12 @@
         
                 <button type="submit">Create</button>
             </form>
-        </div>
-
-        <!-- STOCK CREATION -->
+                    
         <script>
             document.getElementById('newstock').addEventListener('submit', async (event) => {
                 event.preventDefault(); 
 
-             
+                
                 const formData = new FormData(event.target);
 
             
@@ -71,7 +62,7 @@
                     initial_price: parseFloat(formData.get('initial_price'))
                 };
 
-             
+                
                 const access_token = localStorage.getItem('access_token'); 
                 console.log("access_token being sent:", access_token);  
 
@@ -108,11 +99,13 @@
             });
         </script>
 
-        <!-- CHANGE MARKET HOURS -->
+        </div>
+
+<!-- CHANGE MARKET HOURS -->
         <div class="update-hours">
             <h2>Update Market Hours</h2>
-                <h3>New Hours:</h3>
                 <form id="markethours">
+                    <h3>New Hours:</h3>
                     <select id="day_of_week" name="day_of_week">
                         <option disabled selected>Select Weekday</option>
                         <option value="0"> Monday </option>
@@ -139,165 +132,245 @@
                     </div>
                     <button type="submit">Submit</button>
                 </form>
+                <script>
+                    const access_token = localStorage.getItem('access_token');
+                    
+                    if (!access_token) {
+                        console.error("No access token found. Please log in.");
+                        alert("You need to log in as an admin.");
+                    } else {
+                        console.log("Access Token:", access_token);  // Log it to make sure it's retrieved
+                        // You can now use this token for authenticated API requests
+                    }
+        
+                    document.getElementById('markethours').addEventListener('submit', async (event) => {
+                        event.preventDefault(); 
+                
+                        const day_of_week = document.getElementById('day_of_week').value;
+                        const is_open = document.getElementById('is_open').value === "true";
+                        const opening_time = document.getElementById('opening_time').value;
+                        const closing_time = document.getElementById('closing_time').value;
+                
+                        const data = {
+                            day_of_week: parseInt(day_of_week),
+                            is_open: is_open,
+                            opening_time: opening_time,
+                            closing_time: closing_time
+                        };
+        
+                        const access_token = localStorage.getItem('access_token'); 
+                        console.log("access_token being sent:", access_token);  
+        
+                        if (!access_token) {
+                            alert('No JWT access_token found. Please log in.');
+                            console.error('No JWT access_token found. Please log in.');
+                            return; 
+                        }
+        
+                        try {
+                            const response = await fetch('http://127.0.0.1:8000/market/market/hours', {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${access_token}` 
+                                },
+                                body: JSON.stringify(data)
+                            });
+        
+                            if (response.ok) {
+                                const result = await response.json();
+                                alert(`Market Hours Updated Successfully: ${JSON.stringify(result)}`);
+                                console.log('Response:', result);
+                            } else {
+                                const errorData = await response.json();
+                                console.error('Error:', errorData);
+                                alert(`Error: ${errorData.detail || 'Failed to update hours.'}`);
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('Failed to update hours. Check the console for details.');
+                        }
+                    });
+                </script>
         </div>
 
-        <script>
-            const access_token = localStorage.getItem('access_token');
-            
-            if (!access_token) {
-                console.error("No access token found. Please log in.");
-                alert("You need to log in as an admin.");
-            } else {
-                console.log("Access Token:", access_token);  // Log it to make sure it's retrieved
-                // You can now use this token for authenticated API requests
+ <!-- TRANSACTION HISTORY -->
+        <div class="transactionhistory">
+            <h2>User Portfolio</h2>
+
+            <h3>Transaction History</h3>
+            <table id="transaction-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ticker</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Transaction Type</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Transactions will be populated here -->
+                </tbody>
+            </table>
+
+            <h3>Portfolio</h3>
+            <div id="portfolio">
+                <!-- Portfolio data will be populated here -->
+            </div>
+
+
+            <script>
+                // Function to fetch transaction history from the backend
+                async function fetchTransactions() {
+                const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
+                const response = await fetch('http://127.0.0.1:8000/transactions/transactions', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // Attach the token to the request headers
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to fetch transactions:', response.statusText);
+                    return;
+                }
+
+                const transactions = await response.json();
+
+                const tableBody = document.querySelector('#transaction-table tbody');
+                tableBody.innerHTML = '';  // Clear existing rows
+
+                transactions.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaction.id}</td>
+                        <td>${transaction.ticker}</td>
+                        <td>${transaction.quantity}</td>
+                        <td>${transaction.price}</td>
+                        <td>${transaction.transaction_type}</td>
+                        <td>${transaction.timestamp}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
             }
 
-            document.getElementById('markethours').addEventListener('submit', async (event) => {
-                event.preventDefault(); 
-        
-                const day_of_week = document.getElementById('day_of_week').value;
-                const is_open = document.getElementById('is_open').value === "true";
-                const opening_time = document.getElementById('opening_time').value;
-                const closing_time = document.getElementById('closing_time').value;
-        
-                const data = {
-                    day_of_week: parseInt(day_of_week),
-                    is_open: is_open,
-                    opening_time: opening_time,
-                    closing_time: closing_time
-                };
-
-                const access_token = localStorage.getItem('access_token'); 
-                console.log("access_token being sent:", access_token);  
-
-                if (!access_token) {
-                    alert('No JWT access_token found. Please log in.');
-                    console.error('No JWT access_token found. Please log in.');
-                    return; 
-                }
-
-                try {
-                    const response = await fetch('http://127.0.0.1:8000/market/market/hours', {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${access_token}` 
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        alert(`Market Hours Updated Successfully: ${JSON.stringify(result)}`);
-                        console.log('Response:', result);
-                    } else {
-                        const errorData = await response.json();
-                        console.error('Error:', errorData);
-                        alert(`Error: ${errorData.detail || 'Failed to update hours.'}`);
+            async function fetchPortfolio() {
+                const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
+                const response = await fetch('http://127.0.0.1:8000/portfolio/portfolio', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // Attach the token to the request headers
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Failed to update hours. Check the console for details.');
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to fetch portfolio:', response.statusText);
+                    return;
                 }
-            });
-        </script>
 
-<h2>User Portfolio</h2>
+                const data = await response.json();
+                const portfolioDiv = document.getElementById('portfolio');
+                portfolioDiv.innerHTML = `<p>${data.portfolio}</p>`;
+            }
 
-<h3>Transaction History</h3>
-<table id="transaction-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Ticker</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Transaction Type</th>
-            <th>Timestamp</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Transactions will be populated here -->
-    </tbody>
-</table>
+            // Fetch data when the page loads
+            window.onload = function() {
+                fetchTransactions();
+                fetchPortfolio();
+            }
+            </script>
+        </div>
 
-<h3>Portfolio</h3>
-<div id="portfolio">
-    <!-- Portfolio data will be populated here -->
-</div>
-<script>
-    // Function to fetch transaction history from the backend
-    async function fetchTransactions() {
-    const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
-    const response = await fetch('http://127.0.0.1:8000/transactions/transactions', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`  // Attach the token to the request headers
-        }
-    });
+ <!-- FUNDS MANAGEMENT -->
+        <div class="funds">
+            <h2>Account Funds</h2>
+                <h3>Deposit Funds</h3>
+                <form id="deposit-form">
+                    <label for="deposit-amount">Amount to Deposit:</label>
+                    <input type="number" id="deposit-amount" name="amount" min="0" step="0.01" required>
+                    <button type="submit">Deposit</button>
+                </form>
 
-    if (!response.ok) {
-        console.error('Failed to fetch transactions:', response.statusText);
-        return;
-    }
+                <!-- Withdrawal Form -->
+                <h3>Withdraw Funds</h3>
+                <form id="withdraw-form">
+                    <label for="withdraw-amount">Amount to Withdraw:</label>
+                    <input type="number" id="withdraw-amount" name="amount" min="0" step="0.01" required>
+                    <button type="submit">Withdraw</button>
+                </form>
 
-    const transactions = await response.json();
+                <div class="response-message" id="response-message"></div>
+                <script>
+                    // Helper function to handle response
+                    function handleResponse(response) {
+                        const messageElement = document.getElementById('response-message');
+                        if (!response.ok) {
+                            messageElement.textContent = `Error: ${response.statusText}`;
+                            messageElement.className = 'response-message error';
+                        } else {
+                            return response.json().then(data => {
+                                messageElement.textContent = `${data.message} New balance: $${data.cash_balance}`;
+                                messageElement.className = 'response-message success';
+                            });
+                        }
+                    }
+            
+                    // Deposit Funds
+                    document.getElementById('deposit-form').addEventListener('submit', async function(event) {
+                        event.preventDefault();
+                        const amount = parseFloat(document.getElementById('deposit-amount').value);
+                        const token = localStorage.getItem('access_token');
+            
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount }),
+                        });
+            
+                        handleResponse(response);
+                    });
+            
+                    // Withdraw Funds
+                    document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
+                        event.preventDefault();
+                        const amount = parseFloat(document.getElementById('withdraw-amount').value);
+                        const token = localStorage.getItem('access_token');
+            
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ amount }),
+                        });
+            
+                        handleResponse(response);
+                    });
+                </script>
+        </div>
 
-    const tableBody = document.querySelector('#transaction-table tbody');
-    tableBody.innerHTML = '';  // Clear existing rows
+ <!-- TRADE STOCKS -->
+        <div class="trade">
+            <h2>Trade Stocks</h2>
+                
+        </div>
 
-    transactions.forEach(transaction => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${transaction.id}</td>
-            <td>${transaction.ticker}</td>
-            <td>${transaction.quantity}</td>
-            <td>${transaction.price}</td>
-            <td>${transaction.transaction_type}</td>
-            <td>${transaction.timestamp}</td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
+ <!-- LOGOUT BUTTON -->
+        <div class="logout">
+            <button onclick="logout()">Logout</button>
 
-async function fetchPortfolio() {
-    const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
-    const response = await fetch('http://127.0.0.1:8000/transactions/portfolio', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`  // Attach the token to the request headers
-        }
-    });
-
-    if (!response.ok) {
-        console.error('Failed to fetch portfolio:', response.statusText);
-        return;
-    }
-
-    const data = await response.json();
-    const portfolioDiv = document.getElementById('portfolio');
-    portfolioDiv.innerHTML = `<p>${data.portfolio}</p>`;
-}
-
-// Fetch data when the page loads
-window.onload = function() {
-    fetchTransactions();
-    fetchPortfolio();
-}
-</script>
-
-
-
-
-
-</div>
-
-<div class="funds">
-    <h2>Account Funds</h2>
-        
-</div>
-
-<div class="trade">
-    <h2>Trade Stocks</h2>
-        
-</div>
+            <script>
+                // Logout function
+                function logout() {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('adminData');
+                    window.location.href = 'admin.html';
+                }
+            </script>
+        </div>

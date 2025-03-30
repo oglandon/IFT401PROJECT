@@ -8,6 +8,7 @@
     </head>
     
     <body>
+<!-- NAVIGATE BAR -->
         <div id="wrapper">
             <header>
                 <section id="top_bar">
@@ -23,7 +24,9 @@
                     </nav>
                 </section>
             </header>
+        </div>
 
+<!-- ACCOUNT CREATION -->
         <div class="create-container">
             <h2>Account Creation.</h2>
             <form id="create-form" method="POST" action="http://127.0.0.1:8000/user/register">
@@ -44,43 +47,44 @@
                     </select>
                 <button type="submit">Create Account</button>
             </form>
+            <script>
+                window.onload = function() {
+                    document.getElementById("create-form").reset();
+                };
+            </script>
+            <script>
+                document.getElementById('create-form').addEventListener('submit', function(event) {
+                    event.preventDefault();
+    
+                    const formData = {
+                        username: document.getElementById('username').value,
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value,
+                        is_admin: document.getElementById('is_admin').value === "true"
+                    };
+    
+                    console.log("Sending the following data to the server:", formData);
+    
+                    fetch('http://127.0.0.1:8000/user/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.username) {  // Check if the response has the username field (successful creation)
+                            alert('Account created successfully!');
+                        } else {
+                            alert('Failed to create account!');
+                        }
+                    })
+                    .catch(error => {
+                        alert('An error occurred: ' + error.message);
+                    });
+                });
+            </script>
         </div>
 
-        <script>
-            window.onload = function() {
-                document.getElementById("create-form").reset();
-            };
-        </script>
-        <script>
-            document.getElementById('create-form').addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                const formData = {
-                    username: document.getElementById('username').value,
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value,
-                    is_admin: document.getElementById('is_admin').value === "true"
-                };
-
-                console.log("Sending the following data to the server:", formData);
-
-                fetch('http://127.0.0.1:8000/user/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.username) {  // Check if the response has the username field (successful creation)
-                        alert('Account created successfully!');
-                    } else {
-                        alert('Failed to create account!');
-                    }
-                })
-                .catch(error => {
-                    alert('An error occurred: ' + error.message);
-                });
-            });
-        </script>
+        
