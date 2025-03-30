@@ -62,17 +62,17 @@ select {
     margin-top: 10px;
 }
 
-select#weekday, select#openclosed {
+select#weekday, select#is_open{
     width: 180px;
 }
 
-input#closingtime  {
+input#closing_time  {
     width: 156px;
     color: #549BCC;
     margin-left:3px;
 }
 
-input#openingtime {
+input#opening_time {
     width: 156px;
     color: #549BCC;
     margin-left: 17px;
