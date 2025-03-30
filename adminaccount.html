@@ -214,6 +214,14 @@
 
                 <div class="response-message" id="response-message"></div>
                 <script>
+                    if (!access_token) {
+                        console.error("No access token found. Please log in.");
+                        alert("You need to log in as an admin.");
+                    } else {
+                        console.log("Access Token:", access_token);  // Log it to make sure it's retrieved
+                        // You can now use this token for authenticated API requests
+                    }         
+                               
                     // Helper function to handle response
                     function handleResponse(response) {
                         const messageElement = document.getElementById('response-message');
@@ -252,7 +260,7 @@
                         const amount = parseFloat(document.getElementById('withdraw-amount').value);
                         const token = localStorage.getItem('access_token');
             
-                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/withdraw', {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${token}`,
