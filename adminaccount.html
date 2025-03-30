@@ -27,7 +27,7 @@
     <button onclick="logout()">Logout</button>
 
     <script>
-        // Logout function to clear localStorage and redirect to login page
+        // Logout function
         function logout() {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('adminData');
@@ -55,14 +55,15 @@
             </form>
         </div>
 
+        <!-- STOCK CREATION -->
         <script>
             document.getElementById('newstock').addEventListener('submit', async (event) => {
-                event.preventDefault();  // Prevents the default form submission
+                event.preventDefault(); 
 
-                // Gather form data
+             
                 const formData = new FormData(event.target);
 
-                // Create JSON object
+            
                 const data = {
                     company_name: formData.get('company_name'),
                     ticker: formData.get('ticker'),
@@ -70,15 +71,15 @@
                     initial_price: parseFloat(formData.get('initial_price'))
                 };
 
-                // ✅ Retrieve the JWT token from localStorage or sessionStorage
-                const accessToken = localStorage.getItem('accessToken');  // Ensure the key name matches where you stored the token
-                console.log("accessToken being sent:", accessToken);  // Debugging line
+             
+                const accessToken = localStorage.getItem('accessToken'); 
+                console.log("accessToken being sent:", accessToken);  
 
-                // ⚠️ Check if token exists before making the request
+            
                 if (!accessToken) {
                     alert('No JWT accessToken found. Please log in.');
                     console.error('No JWT accessToken found. Please log in.');
-                    return;  // Stop the request if there's no accessToken
+                    return; 
                 }
 
                 try {
@@ -86,7 +87,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${accessToken}`  // Include JWT token in the header
+                            'Authorization': `Bearer ${accessToken}` 
                         },
                         body: JSON.stringify(data)
                     });
@@ -107,37 +108,85 @@
             });
         </script>
 
-<div class="update-hours">
-    <h2>Update Market Hours</h2>
-        <h3>New Hours:</h3>
-        <form id="markethours" method="PATCH" action='http://127.0.0.1:8000/market/market/hours'>
-            <select id="weekday">
-                <option disabled selected>Select Weekday</option>
-                <option value="0"> Monday </option>
-                <option value="1"> Tuesday </option>
-                <option value="2"> Wednesday </option>
-                <option value="3"> Thursday </option>
-                <option value="4"> Friday </option>
-            </select>
-            <select id="openclosed">
-                <option disabled selected>Open or Closed?</option>
-                <option value="true"> Open </option>
-                <option value="false"> Closed </option>
-            </select>
-            <div class="time-inputs">
-                <div class="opening-time">
-                    <label for="openingtime" id="openingtimelabel">Opening Time</label><br>
-                    <input type="text" id="openingtime" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
-                </div>
-            
-                <div class="closing-time">
-                    <label for="closingtime" id="closingtimelabel">Closing Time</label><br>
-                    <input type="text" id="closingtime" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
-                </div>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
-</div>
+        <!-- CHANGE MARKET HOURS -->
+        <div class="update-hours">
+            <h2>Update Market Hours</h2>
+                <h3>New Hours:</h3>
+                <form id="markethours" method="PATCH" action='http://127.0.0.1:8000/market/market/hours'>
+                    <select id="weekday">
+                        <option disabled selected>Select Weekday</option>
+                        <option value="0"> Monday </option>
+                        <option value="1"> Tuesday </option>
+                        <option value="2"> Wednesday </option>
+                        <option value="3"> Thursday </option>
+                        <option value="4"> Friday </option>
+                    </select>
+                    <select id="openclosed">
+                        <option disabled selected>Open or Closed?</option>
+                        <option value="true"> Open </option>
+                        <option value="false"> Closed </option>
+                    </select>
+                    <div class="time-inputs">
+                        <div class="opening-time">
+                            <label for="openingtime" id="openingtimelabel">Opening Time</label><br>
+                            <input type="text" id="openingtime" name="opening_time" placeholder="Use 24hr time (eg 09:00)" required>
+                        </div>
+                    
+                        <div class="closing-time">
+                            <label for="closingtime" id="closingtimelabel">Closing Time</label><br>
+                            <input type="text" id="closingtime" name="closing_time" placeholder="Use 24hr time (eg 17:00)"required>
+                        </div>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+        </div>
+
+        <script>
+            document.getElementById('markethours-form').addEventListener('submit', async function(event) {
+                event.preventDefault();
+        
+                const token = localStorage.getItem('access_token');  // Retrieve token (if using local storage)
+                if (!token) {
+                    alert("Unauthorized: No token found.");
+                    return;
+                }
+        
+                const day_of_week = document.getElementById('weekday').value;
+                const is_open = document.getElementById('openclosed').value === "true";
+                const opening_time = document.getElementById('openingtime').value;
+                const closing_time = document.getElementById('closingtime').value;
+        
+                const data = {
+                    day_of_week: parseInt(day_of_week),
+                    is_open: is_open,
+                    opening_time: opening_time,
+                    closing_time: closing_time
+                };
+        
+                try {
+                    const response = await fetch("http://127.0.0.1:8000/market/hours", {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`  // Add JWT token
+                        },
+                        body: JSON.stringify(data)
+                    });
+        
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert("Market hours updated successfully!");
+                        console.log(result);
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.detail}`);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Failed to update market hours.");
+                }
+            });
+        </script>
 
 <div class="portfolio">
     <h2>Your Portfolio</h2>
