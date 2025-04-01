@@ -467,66 +467,7 @@
             </div>
 
 
-            <script>
-                // Function to fetch transaction history from the backend
-                async function fetchTransactions() {
-                const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
-                const response = await fetch('http://127.0.0.1:8000/transactions/transactions', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`  // Attach the token to the request headers
-                    }
-                });
-
-                if (!response.ok) {
-                    console.error('Failed to fetch transactions:', response.statusText);
-                    return;
-                }
-
-                const transactions = await response.json();
-
-                const tableBody = document.querySelector('#transaction-table tbody');
-                tableBody.innerHTML = '';  // Clear existing rows
-
-                transactions.forEach(transaction => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${transaction.id}</td>
-                        <td>${transaction.ticker}</td>
-                        <td>${transaction.quantity}</td>
-                        <td>${transaction.price}</td>
-                        <td>${transaction.transaction_type}</td>
-                        <td>${transaction.timestamp}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-
-            async function fetchPortfolio() {
-                const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
-                const response = await fetch('http://127.0.0.1:8000/transactions/portfolio', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`  // Attach the token to the request headers
-                    }
-                });
-
-                if (!response.ok) {
-                    console.error('Failed to fetch portfolio:', response.statusText);
-                    return;
-                }
-
-                const data = await response.json();
-                const portfolioDiv = document.getElementById('portfolio');
-                portfolioDiv.innerHTML = `<p>${data.portfolio}</p>`;
-            }
-
-            // Fetch data when the page loads
-            window.onload = function() {
-                fetchTransactions();
-                fetchPortfolio();
-            }
-            </script>
+   
         </div>
 
  <!-- LOGOUT BUTTON -->
