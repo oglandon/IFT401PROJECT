@@ -343,7 +343,7 @@
 
             async function fetchPortfolio() {
                 const token = localStorage.getItem('access_token');  // Assuming token is stored in localStorage
-                const response = await fetch('http://127.0.0.1:8000/portfolio/portfolio', {
+                const response = await fetch('http://127.0.0.1:8000/transactions/portfolio', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`  // Attach the token to the request headers
