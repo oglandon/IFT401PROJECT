@@ -224,15 +224,13 @@
                     // ✅ Make handleResponse globally accessible
                     async function handleResponse(response) {
                         const messageElement = document.getElementById('response-message');
-
+            
                         if (!response.ok) {
                             messageElement.textContent = `Error: ${response.statusText}`;
                             messageElement.className = 'response-message error';
                         } else {
-                            const data = await response.json();
-                            
-                            // ✅ Display only the balance in the format: "New Balance ($X)"
-                            messageElement.textContent = `New Balance ($${data.cash_balance.toFixed(2)})`;
+                            const data = await response.json();  // Properly await the JSON response
+                            messageElement.textContent = `${data.message} New balance: ($${data.cash_balance.toFixed(2)})`;
                             messageElement.className = 'response-message success';
                         }
                     }
