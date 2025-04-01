@@ -211,7 +211,7 @@
                     <button type="submit">Withdraw</button>
                 </form>
 
-            <div class="response-message" id="response-message"></div>
+            <div class="funds-response-message" id="funds-response-message"></div>
                 <script>
                     if (!localStorage.getItem('access_token')) {
                         console.error("No access token found. Please log in.");
@@ -222,28 +222,27 @@
             
              
                     async function handleResponse(response) {
-                        const messageElement = document.getElementById('response-message');
+                        const messageElement = document.getElementById('funds-response-message');
 
                         try {
                             if (!response.ok) {
                                 messageElement.textContent = `Error: ${response.statusText}`;
-                                messageElement.className = 'response-message error';
+                                messageElement.className = 'funds-response-message error';
                             } else {
-                                await response.json();  
-                                
-                               
+                                const responseData = await response.json();
+                                console.log(responseData); 
                                 await fetchBalance();
                             }
                         } catch (error) {
                             console.error('Error handling response:', error);
                             messageElement.textContent = 'Error processing request';
-                            messageElement.className = 'response-message error';
+                            messageElement.className = 'funds-response-message error';
                         }
                     }
 
                     
                     async function fetchBalance() {
-                        const messageElement = document.getElementById('response-message');
+                        const messageElement = document.getElementById('funds-response-message');
                         const access_token = localStorage.getItem('access_token');
 
                         try {
@@ -258,15 +257,15 @@
                             if (balanceResponse.ok) {
                                 const balanceData = await balanceResponse.json();
                                 messageElement.textContent = `New Balance ($${balanceData.cash_balance.toFixed(2)})`;
-                                messageElement.className = 'response-message success';
+                                messageElement.className = 'funds-response-message success';
                             } else {
                                 messageElement.textContent = `Error fetching balance: ${balanceResponse.statusText}`;
-                                messageElement.className = 'response-message error';
+                                messageElement.className = 'funds-response-message error';
                             }
                         } catch (error) {
                             console.error('Error fetching balance:', error);
                             messageElement.textContent = 'Error retrieving balance';
-                            messageElement.className = 'response-message error';
+                            messageElement.className = 'funds-response-message error';
                         }
                     }
             
@@ -331,7 +330,7 @@
                 <input type="number" id="stockamount" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
             </form>
-            <div class="response-message" id="response-message"></div>
+            <div class="trade-response-message" id="trade-response-message"></div>
   
             <script>
                     // ✅ Ensure the user is logged in with an access token
@@ -344,13 +343,13 @@
 
                 // ✅ Handle responses and fetch balance afterward
                 async function handleResponse(response) {
-                    const messageElement = document.getElementById('response-message');
+                    const messageElement = document.getElementById('trade-response-message');
 
                     try {
                         if (!response.ok) {
                             const errorData = await response.json();
                             messageElement.textContent = `Error: ${errorData.detail || response.statusText}`;
-                            messageElement.className = 'response-message error';
+                            messageElement.className = 'trade-response-message error';
                         } else {
                             const data = await response.json();
 
@@ -358,7 +357,7 @@
                             messageElement.textContent = `${data.transaction_type.charAt(0).toUpperCase() + data.transaction_type.slice(1)} 
                             ${data.quantity} shares of ${data.ticker} at $${data.price.toFixed(2)} each.`;
                             
-                            messageElement.className = 'response-message success';
+                            messageElement.className = 'trade-response-message success';
 
                             // ✅ Fetch the latest balance after trading
                             await fetchBalance();
@@ -366,13 +365,13 @@
                     } catch (error) {
                         console.error('Error handling response:', error);
                         messageElement.textContent = 'Error processing trade request';
-                        messageElement.className = 'response-message error';
+                        messageElement.className = 'trade-response-message error';
                     }
                 }
 
                 // ✅ Fetch the current balance
                 async function fetchBalance() {
-                    const messageElement = document.getElementById('response-message');
+                    const messageElement = document.getElementById('trade-response-message');
                     const access_token = localStorage.getItem('access_token');
 
                     try {
@@ -389,12 +388,12 @@
                             messageElement.textContent += ` | New Balance: $${balanceData.cash_balance.toFixed(2)}`;
                         } else {
                             messageElement.textContent += ` | Error fetching balance: ${balanceResponse.statusText}`;
-                            messageElement.className = 'response-message error';
+                            messageElement.className = 'trade-response-message error';
                         }
                     } catch (error) {
                         console.error('Error fetching balance:', error);
                         messageElement.textContent += ' | Error retrieving balance';
-                        messageElement.className = 'response-message error';
+                        messageElement.className = 'trade-response-message error';
                     }
                 }
 
