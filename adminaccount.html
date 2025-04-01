@@ -219,11 +219,10 @@
                     } else {
                         console.log("Access Token:", localStorage.getItem('access_token'));
                     }
-            
-             
+                
                     async function handleResponse(response) {
                         const messageElement = document.getElementById('funds-response-message');
-
+                
                         try {
                             if (!response.ok) {
                                 messageElement.textContent = `Error: ${response.statusText}`;
@@ -231,6 +230,8 @@
                             } else {
                                 const responseData = await response.json();
                                 console.log(responseData); 
+                                
+                                // Directly fetch the balance after successful response
                                 await fetchBalance();
                             }
                         } catch (error) {
@@ -239,12 +240,11 @@
                             messageElement.className = 'funds-response-message error';
                         }
                     }
-
-                    
+                
                     async function fetchBalance() {
                         const messageElement = document.getElementById('funds-response-message');
                         const access_token = localStorage.getItem('access_token');
-
+                
                         try {
                             const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
                                 method: 'GET',
@@ -253,7 +253,7 @@
                                     'Content-Type': 'application/json',
                                 }
                             });
-
+                
                             if (balanceResponse.ok) {
                                 const balanceData = await balanceResponse.json();
                                 messageElement.textContent = `New Balance ($${balanceData.cash_balance.toFixed(2)})`;
@@ -268,14 +268,13 @@
                             messageElement.className = 'funds-response-message error';
                         }
                     }
-            
-                  
+                
                     document.getElementById('deposit-form').addEventListener('submit', async function(event) {
                         event.preventDefault();
-                        
+                
                         const amount = parseFloat(document.getElementById('deposit-amount').value);
                         const access_token = localStorage.getItem('access_token');
-            
+                
                         const response = await fetch('http://127.0.0.1:8000/portfolio/deposit', {
                             method: 'POST',
                             headers: {
@@ -284,17 +283,16 @@
                             },
                             body: JSON.stringify({ amount }),
                         });
-            
-                        await handleResponse(response);  
+                
+                        await handleResponse(response);
                     });
-            
-                  
+                
                     document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
                         event.preventDefault();
-            
+                
                         const amount = parseFloat(document.getElementById('withdraw-amount').value);
                         const access_token = localStorage.getItem('access_token');
-            
+                
                         const response = await fetch('http://127.0.0.1:8000/portfolio/withdraw', {
                             method: 'POST',
                             headers: {
@@ -303,8 +301,8 @@
                             },
                             body: JSON.stringify({ amount }),
                         });
-            
-                        await handleResponse(response);  
+                
+                        await handleResponse(response);
                     });
                 </script>
             </div>
@@ -326,7 +324,7 @@
             <form id="sellstock">
                 <label for="ticker">Stock To Sell:</label>
                 <input type="text" id="sellstock" name="ticker"  required placeholder="Ticker Symbol">
-                <label for="buystock">Amount To Sell:</label>
+                <label for="sellstock">Amount To Sell:</label>
                 <input type="number" id="stockamount" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
             </form>
@@ -401,8 +399,8 @@
                 document.getElementById('buystock').addEventListener('submit', async function(event) {
                     event.preventDefault();
 
-                    const ticker = document.querySelector('#buystock input[name="ticker"]').value.toUpperCase();
-                    const quantity = parseInt(document.querySelector('#buystock input[name="quantity"]').value);
+                    const ticker = document.getElementById('ticker').value;
+                    const quantity = parseFloat(document.getElementById('stockamount').value);
                     const access_token = localStorage.getItem('access_token');
 
                     const response = await fetch('http://127.0.0.1:8000/trade/trade/buy', {
@@ -420,8 +418,8 @@
                 document.getElementById('sellstock').addEventListener('submit', async function(event) {
                     event.preventDefault();
 
-                    const ticker = document.querySelector('#sellstock input[name="ticker"]').value.toUpperCase();
-                    const quantity = parseInt(document.querySelector('#sellstock input[name="quantity"]').value);
+                    const ticker = document.getElementById('ticker').value;
+                    const quantity = parseFloat(document.getElementById('stockamount').value);
                     const access_token = localStorage.getItem('access_token');
 
                     const response = await fetch('http://127.0.0.1:8000/trade/trade/sell', {
