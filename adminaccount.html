@@ -229,7 +229,7 @@
                         const amount = parseFloat(document.getElementById('deposit-amount').value);
                         const access_token = localStorage.getItem('access_token');
             
-                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/deposit', {
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/deposit', {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${access_token}`,
@@ -247,7 +247,7 @@
                         const amount = parseFloat(document.getElementById('withdraw-amount').value);
                         const access_token = localStorage.getItem('access_token');
             
-                        const response = await fetch('http://127.0.0.1:8000/portfolio/cash/withdraw', {
+                        const response = await fetch('http://127.0.0.1:8000/portfolio/withdraw', {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${access_token}`,
