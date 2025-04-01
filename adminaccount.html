@@ -224,14 +224,50 @@
                     // ✅ Make handleResponse globally accessible
                     async function handleResponse(response) {
                         const messageElement = document.getElementById('response-message');
-            
-                        if (!response.ok) {
-                            messageElement.textContent = `Error: ${response.statusText}`;
+
+                        try {
+                            if (!response.ok) {
+                                messageElement.textContent = `Error: ${response.statusText}`;
+                                messageElement.className = 'response-message error';
+                            } else {
+                                await response.json();  // Parse the response, but we don't need it here
+                                
+                                // ✅ Fetch the latest balance immediately after transaction
+                                await fetchBalance();
+                            }
+                        } catch (error) {
+                            console.error('Error handling response:', error);
+                            messageElement.textContent = 'Error processing request';
                             messageElement.className = 'response-message error';
-                        } else {
-                            const data = await response.json();  // Properly await the JSON response
-                            messageElement.textContent = `${data.message} New balance: ($${data.cash_balance.toFixed(2)})`;
-                            messageElement.className = 'response-message success';
+                        }
+                    }
+
+                    // ✅ Fetch balance from the `/balance` endpoint
+                    async function fetchBalance() {
+                        const messageElement = document.getElementById('response-message');
+                        const access_token = localStorage.getItem('access_token');
+
+                        try {
+                            const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${access_token}`,
+                                    'Content-Type': 'application/json',
+                                }
+                            });
+
+                            if (balanceResponse.ok) {
+                                const balanceData = await balanceResponse.json();
+                                messageElement.textContent = `New Balance ($${balanceData.cash_balance.toFixed(2)})`;
+                                messageElement.className = 'response-message success';
+                            } else {
+                                messageElement.textContent = `Error fetching balance: ${balanceResponse.statusText}`;
+                                messageElement.className = 'response-message error';
+                            }
+                        } catch (error) {
+                            console.error('Error fetching balance:', error);
+                            messageElement.textContent = 'Error retrieving balance';
+                            messageElement.className = 'response-message error';
                         }
                     }
             
