@@ -319,7 +319,7 @@
                 <label for="ticker">Stock To Buy:</label>
                 <input type="text" id="sellstock" name="ticker" required placeholder="Ticker Symbol">
                 <label for="buystock">Amount To Buy:</label>
-                <input type="number" id="stockamount" name="quantity" min="0" step="1" required placeholder="Amount to Buy">
+                <input type="number" id="stockamount" name="quantity" min="0" step="any" required placeholder="Amount to Buy">
                 <button type="submit">Purchase</button>
             </form>
 
@@ -328,7 +328,7 @@
                 <label for="ticker">Stock To Sell:</label>
                 <input type="text" id="sellstock" name="ticker"  required placeholder="Ticker Symbol">
                 <label for="buystock">Amount To Sell:</label>
-                <input type="number" id="stockamount" name="quantity" min="0" step="1" required placeholder="Amount to Sell">
+                <input type="number" id="stockamount" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
             </form>
             <div class="response-message" id="response-message"></div>
@@ -406,7 +406,7 @@
                     const quantity = parseInt(document.querySelector('#buystock input[name="quantity"]').value);
                     const access_token = localStorage.getItem('access_token');
 
-                    const response = await fetch('http://127.0.0.1:8000/trade/trade/buy', {
+                    const response = await fetch('http://127.0.0.1:8000/trade/buy', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${access_token}`,
@@ -425,7 +425,7 @@
                     const quantity = parseInt(document.querySelector('#sellstock input[name="quantity"]').value);
                     const access_token = localStorage.getItem('access_token');
 
-                    const response = await fetch('http://127.0.0.1:8000/trade/trade/sell', {
+                    const response = await fetch('http://127.0.0.1:8000/trade/sell', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${access_token}`,
