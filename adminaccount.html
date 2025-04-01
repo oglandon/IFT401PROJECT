@@ -331,111 +331,113 @@
                 <input type="number" id="stockamount" name="quantity" min="0" step="1" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
             </form>
-        <div class="response-message" id="response-message"></div>
-        </div>
-        <script>
-                // ✅ Ensure the user is logged in with an access token
-            if (!localStorage.getItem('access_token')) {
-                console.error("No access token found. Please log in.");
-                alert("You need to log in.");
-            } else {
-                console.log("Access Token:", localStorage.getItem('access_token'));
-            }
-
-            // ✅ Handle responses and fetch balance afterward
-            async function handleResponse(response, actionType, ticker, quantity) {
-                const messageElement = document.getElementById('response-message');
-
-                try {
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        messageElement.textContent = `Error: ${errorData.detail || response.statusText}`;
-                        messageElement.className = 'response-message error';
-                    } else {
-                        const data = await response.json();
-
-                        // ✅ Display the stock trade result
-                        messageElement.textContent = `${actionType} ${quantity} shares of ${ticker} at $${data.price.toFixed(2)} each.`;
-                        messageElement.className = 'response-message success';
-
-                        // ✅ Fetch the latest balance after trading
-                        await fetchBalance();
-                    }
-                } catch (error) {
-                    console.error('Error handling response:', error);
-                    messageElement.textContent = 'Error processing trade request';
-                    messageElement.className = 'response-message error';
+            <div class="response-message" id="response-message"></div>
+  
+            <script>
+                    // ✅ Ensure the user is logged in with an access token
+                if (!localStorage.getItem('access_token')) {
+                    console.error("No access token found. Please log in.");
+                    alert("You need to log in.");
+                } else {
+                    console.log("Access Token:", localStorage.getItem('access_token'));
                 }
-            }
 
-            // ✅ Fetch the current balance
-            async function fetchBalance() {
-                const messageElement = document.getElementById('response-message');
-                const access_token = localStorage.getItem('access_token');
+                // ✅ Handle responses and fetch balance afterward
+                async function handleResponse(response) {
+                    const messageElement = document.getElementById('response-message');
 
-                try {
-                    const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
-                        method: 'GET',
+                    try {
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            messageElement.textContent = `Error: ${errorData.detail || response.statusText}`;
+                            messageElement.className = 'response-message error';
+                        } else {
+                            const data = await response.json();
+
+                            // ✅ Use `transaction_type` from Python response
+                            messageElement.textContent = `${data.transaction_type.charAt(0).toUpperCase() + data.transaction_type.slice(1)} 
+                            ${data.quantity} shares of ${data.ticker} at $${data.price.toFixed(2)} each.`;
+                            
+                            messageElement.className = 'response-message success';
+
+                            // ✅ Fetch the latest balance after trading
+                            await fetchBalance();
+                        }
+                    } catch (error) {
+                        console.error('Error handling response:', error);
+                        messageElement.textContent = 'Error processing trade request';
+                        messageElement.className = 'response-message error';
+                    }
+                }
+
+                // ✅ Fetch the current balance
+                async function fetchBalance() {
+                    const messageElement = document.getElementById('response-message');
+                    const access_token = localStorage.getItem('access_token');
+
+                    try {
+                        const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${access_token}`,
+                                'Content-Type': 'application/json',
+                            }
+                        });
+
+                        if (balanceResponse.ok) {
+                            const balanceData = await balanceResponse.json();
+                            messageElement.textContent += ` | New Balance: $${balanceData.cash_balance.toFixed(2)}`;
+                        } else {
+                            messageElement.textContent += ` | Error fetching balance: ${balanceResponse.statusText}`;
+                            messageElement.className = 'response-message error';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching balance:', error);
+                        messageElement.textContent += ' | Error retrieving balance';
+                        messageElement.className = 'response-message error';
+                    }
+                }
+
+                // ✅ Attach event listeners to both Buy and Sell forms
+                document.getElementById('buystock').addEventListener('submit', async function(event) {
+                    event.preventDefault();
+
+                    const ticker = document.querySelector('#buystock input[name="ticker"]').value.toUpperCase();
+                    const quantity = parseInt(document.querySelector('#buystock input[name="quantity"]').value);
+                    const access_token = localStorage.getItem('access_token');
+
+                    const response = await fetch('http://127.0.0.1:8000/trade/trade/buy', {
+                        method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${access_token}`,
                             'Content-Type': 'application/json',
-                        }
+                        },
+                        body: JSON.stringify({ ticker, quantity })
                     });
 
-                    if (balanceResponse.ok) {
-                        const balanceData = await balanceResponse.json();
-                        messageElement.textContent += ` | New Balance: $${balanceData.cash_balance.toFixed(2)}`;
-                    } else {
-                        messageElement.textContent += ` | Error fetching balance: ${balanceResponse.statusText}`;
-                        messageElement.className = 'response-message error';
-                    }
-                } catch (error) {
-                    console.error('Error fetching balance:', error);
-                    messageElement.textContent += ' | Error retrieving balance';
-                    messageElement.className = 'response-message error';
-                }
-            }
-
-            // ✅ Attach event listeners to both Buy and Sell forms
-            document.getElementById('buystock').addEventListener('submit', async function(event) {
-                event.preventDefault();
-
-                const ticker = document.querySelector('#buystock input[name="ticker"]').value.toUpperCase();
-                const quantity = parseInt(document.querySelector('#buystock input[name="quantity"]').value);
-                const access_token = localStorage.getItem('access_token');
-
-                const response = await fetch('http://127.0.0.1:8000/trade/trade/buy', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${access_token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ticker, quantity })
+                    await handleResponse(response, 'Bought', ticker, quantity);
                 });
 
-                await handleResponse(response, 'Bought', ticker, quantity);
-            });
+                document.getElementById('sellstock').addEventListener('submit', async function(event) {
+                    event.preventDefault();
 
-            document.getElementById('sellstock').addEventListener('submit', async function(event) {
-                event.preventDefault();
+                    const ticker = document.querySelector('#sellstock input[name="ticker"]').value.toUpperCase();
+                    const quantity = parseInt(document.querySelector('#sellstock input[name="quantity"]').value);
+                    const access_token = localStorage.getItem('access_token');
 
-                const ticker = document.querySelector('#sellstock input[name="ticker"]').value.toUpperCase();
-                const quantity = parseInt(document.querySelector('#sellstock input[name="quantity"]').value);
-                const access_token = localStorage.getItem('access_token');
+                    const response = await fetch('http://127.0.0.1:8000/trade/trade/sell', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${access_token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ ticker, quantity })
+                    });
 
-                const response = await fetch('http://127.0.0.1:8000/trade/trade/sell', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${access_token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ticker, quantity })
+                    await handleResponse(response, 'Sold', ticker, quantity);
                 });
-
-                await handleResponse(response, 'Sold', ticker, quantity);
-            });
-        </script>
-
+            </script>
+        </div>
 
 
  <!-- TRANSACTION HISTORY -->
