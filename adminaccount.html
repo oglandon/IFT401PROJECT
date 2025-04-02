@@ -210,8 +210,8 @@
                     <input type="number" id="withdraw-amount" name="amount" min="0" step="any" required>
                     <button type="submit">Withdraw</button>
                 </form>
-
                 <div class="funds-response-message" id="funds-response-message"></div>
+        </div>
                 <script>
                     if (!localStorage.getItem('access_token')) {
                         console.error("No access token found. Please log in.");
@@ -329,7 +329,7 @@
                 <button type="submit">Sell</button>
             </form>
             <div class="trade-response-message" id="trade-response-message"></div>
-  
+        </div>
             <script>
                     // ✅ Ensure the user is logged in with an access token
                 if (!localStorage.getItem('access_token')) {
