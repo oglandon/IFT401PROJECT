@@ -78,8 +78,8 @@
                             alert('Login successful!');
                             
                             await fetchUserData(access_token);
-                            
-                            await checkAdminStatus(access_token);
+                    
+                            window.location.href = 'useraccount.html';
                         } else {
                             alert('Invalid credentials!');
                             throw new Error('Authentication failed');
