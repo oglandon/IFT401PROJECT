@@ -220,7 +220,7 @@
                         console.log("Access Token:", localStorage.getItem('access_token'));
                     }
                 
-                    async function handleResponse(response) {
+                    async function handleFundsResponse(response) {
                         const messageElement = document.getElementById('funds-response-message');
                 
                         try {
@@ -284,7 +284,7 @@
                             body: JSON.stringify({ amount }),
                         });
                 
-                        await handleResponse(response);
+                        await handleFundsResponse(response);
                     });
                 
                     document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
@@ -302,7 +302,7 @@
                             body: JSON.stringify({ amount }),
                         });
                 
-                        await handleResponse(response);
+                        await handleFundsResponse(response);
                     });
                 </script>
             </div>
@@ -340,7 +340,7 @@
                 }
 
                 // ✅ Handle responses and fetch balance afterward
-                async function handleResponse(response) {
+                async function handleTradeResponse(response) {
                     const messageElement = document.getElementById('trade-response-message');
 
                     try {
@@ -412,7 +412,7 @@
                         body: JSON.stringify({ticker, quantity })
                     });
 
-                    await handleResponse(response, 'Bought', ticker, quantity);
+                    await handleTradeResponse(response, 'Bought', ticker, quantity);
                 });
 
                 document.getElementById('sellstock').addEventListener('submit', async function(event) {
@@ -431,7 +431,7 @@
                         body: JSON.stringify({ticker, quantity })
                     });
 
-                    await handleResponse(response, 'Sold', ticker, quantity);
+                    await handleTradeResponse(response, 'Sold', ticker, quantity);
                 });
             </script>
         </div>
