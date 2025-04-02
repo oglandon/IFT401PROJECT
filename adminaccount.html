@@ -211,7 +211,7 @@
                     <button type="submit">Withdraw</button>
                 </form>
 
-            <div class="funds-response-message" id="funds-response-message"></div>
+                <div class="funds-response-message" id="funds-response-message"></div>
                 <script>
                     if (!localStorage.getItem('access_token')) {
                         console.error("No access token found. Please log in.");
@@ -244,7 +244,7 @@
                     async function fetchBalance() {
                         const messageElement = document.getElementById('funds-response-message');
                         const access_token = localStorage.getItem('access_token');
-                
+                        
                         try {
                             const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
                                 method: 'GET',
@@ -403,7 +403,7 @@
                     const quantity = parseFloat(document.getElementById('quantity_buy').value);
                     const access_token = localStorage.getItem('access_token');
 
-                    const response = await fetch('http://127.0.0.1:8000/trade/trade/buy', {
+                    const response = await fetch('http://127.0.0.1:8000/trade/buy', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${access_token}`,
@@ -422,7 +422,7 @@
                     const quantity = parseFloat(document.getElementById('quantity_sell').value);
                     const access_token = localStorage.getItem('access_token');
 
-                    const response = await fetch('http://127.0.0.1:8000/trade/trade/sell', {
+                    const response = await fetch('http://127.0.0.1:8000/trade/sell', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${access_token}`,
