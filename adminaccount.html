@@ -466,8 +466,7 @@
                             await fetchBalance(actionType);
                         }
                     } catch (error) {
-                        console.error('Error handling trade response:', error);
-                        document.getElementById(`${actionType}-trade-response`).textContent = 'Error processing trade request';
+                        cconsole.warn('Trade request failed:', error);
                     }
                 }
             
