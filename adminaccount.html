@@ -314,18 +314,18 @@
             <h3>Buy A Stock</h3>
             <form id="buystock">
                 <label for="ticker">Stock To Buy:</label>
-                <input type="text" id="buyticker" name="buyticker" required placeholder="Ticker Symbol">
+                <input type="text" id="ticker" name="ticker" required placeholder="Ticker Symbol">
                 <label for="buystock">Amount To Buy:</label>
-                <input type="number" id="buyamount" name="buyamount" min="0" step="any" required placeholder="Amount to Buy">
+                <input type="number" id="quantity" name="quantity" min="0" step="any" required placeholder="Amount to Buy">
                 <button type="submit">Purchase</button>
             </form>
 
             <h3 id="sellstock">Sell A Stock:</h3>
             <form id="sellstock">
                 <label for="ticker">Stock To Sell:</label>
-                <input type="text" id="sellticker" name="sellticker"  required placeholder="Ticker Symbol">
+                <input type="text" id="ticker" name="ticker"  required placeholder="Ticker Symbol">
                 <label for="sellstock">Amount To Sell:</label>
-                <input type="number" id="sellamount" name="sellamount" min="0" step="any" required placeholder="Amount to Sell">
+                <input type="number" id="quantity" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
             </form>
             <div class="trade-response-message" id="trade-response-message"></div>
@@ -399,8 +399,8 @@
                 document.getElementById('buystock').addEventListener('submit', async function(event) {
                     event.preventDefault();
 
-                    const ticker = document.getElementById('buyticker').value;
-                    const quantity = parseFloat(document.getElementById('buyamount').value);
+                    const ticker = document.getElementById('ticker').value;
+                    const quantity = parseFloat(document.getElementById('quantity').value);
                     const access_token = localStorage.getItem('access_token');
 
                     const response = await fetch('http://127.0.0.1:8000/trade/trade/buy', {
@@ -418,8 +418,8 @@
                 document.getElementById('sellstock').addEventListener('submit', async function(event) {
                     event.preventDefault();
 
-                    const ticker = document.getElementById('sellticker').value;
-                    const quantity = parseFloat(document.getElementById('sellamount').value);
+                    const ticker = document.getElementById('ticker').value;
+                    const quantity = parseFloat(document.getElementById('quantity').value);
                     const access_token = localStorage.getItem('access_token');
 
                     const response = await fetch('http://127.0.0.1:8000/trade/trade/sell', {
