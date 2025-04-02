@@ -245,7 +245,7 @@
                         const messageElement = document.getElementById('funds-response-message');
                         const access_token = localStorage.getItem('access_token');
                         
-                        try {
+                            try {
                             const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
                                 method: 'GET',
                                 headers: {
