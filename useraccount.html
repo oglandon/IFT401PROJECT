@@ -7,47 +7,135 @@
         <link rel="stylesheet" href="useraccount.css">
     </head>
     
-    <body>
-        <div id="wrapper">
-            <header>
-                <section id="top_bar">
-                    <nav>
-                        <ul>
-                            <li><a href="index.html"> <img src="protonlogo.png" class="logo" alt="Proton Logo"></a></li>
-                            <li><a href="about.html">About Us</a></li>
-                            <li><a href="market.html">Market</a></li>
-                            <li><a href="create.html">Create Account</a></li>
-                            <li><a href="admin.html">Admin Login</a></li>
-                            <li><a href="user.html">User Login</a></li>
-                        </ul>
-                    </nav>
-                </section>
-            </header>
+<!-- NAVIGATE BAR -->
+    <div id="wrapper">
+        <header>
+            <section id="top_bar">
+                <nav>
+                    <ul>
+                        <li><a href="index.html"> <img src="protonlogo.png" class="logo" alt="Proton Logo"></a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="market.html">Market</a></li>
+                        <li><a href="create.html">Create Account</a></li>
+                        <li><a href="admin.html">Admin Login</a></li>
+                        <li><a href="user.html">User Login</a></li>
+                    </ul>
+                </nav>
+            </section>
+        </header>
+    </div>
 
-        <div class="portfolio">
-            <h2>Your Portfolio</h2>
+    
+ <!-- FUNDS MANAGEMENT -->
+    <div class="funds">
+        <h2>Account Funds</h2>
+            <h3>Deposit Funds</h3>
+            <form id="deposit-form">
+                <label for="deposit-amount-label">Amount to Deposit:</label>
+                <input type="number" id="deposit-amount" name="amount" min="0" step="any" required>
+                <button type="submit">Deposit</button>
+            </form>
 
+            <h3 id="withdraw">Withdraw Funds</h3>
+            <form id="withdraw-form">
+                <label for="withdraw-amount-label">Amount to Withdraw:</label>
+                <input type="number" id="withdraw-amount" name="amount" min="0" step="any" required>
+                <button type="submit">Withdraw</button>
+            </form>
+
+        <div class="funds-response-message" id="funds-response-message"></div>
+            <script>
+                if (!localStorage.getItem('access_token')) {
+                    console.error("No access token found. Please log in.");
+                    alert("You need to log in as an admin.");
+                } else {
+                    console.log("Access Token:", localStorage.getItem('access_token'));
+                }
+            
+                async function handleResponse(response) {
+                    const messageElement = document.getElementById('funds-response-message');
+            
+                    try {
+                        if (!response.ok) {
+                            messageElement.textContent = `Error: ${response.statusText}`;
+                            messageElement.className = 'funds-response-message error';
+                        } else {
+                            const responseData = await response.json();
+                            console.log(responseData); 
+                            
+                            // Directly fetch the balance after successful response
+                            await fetchBalance();
+                        }
+                    } catch (error) {
+                        console.error('Error handling response:', error);
+                        messageElement.textContent = 'Error processing request';
+                        messageElement.className = 'funds-response-message error';
+                    }
+                }
+            
+                async function fetchBalance() {
+                    const messageElement = document.getElementById('funds-response-message');
+                    const access_token = localStorage.getItem('access_token');
+            
+                    try {
+                        const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${access_token}`,
+                                'Content-Type': 'application/json',
+                            }
+                        });
+            
+                        if (balanceResponse.ok) {
+                            const balanceData = await balanceResponse.json();
+                            messageElement.textContent = `New Balance ($${balanceData.cash_balance.toFixed(2)})`;
+                            messageElement.className = 'funds-response-message success';
+                        } else {
+                            messageElement.textContent = `Error fetching balance: ${balanceResponse.statusText}`;
+                            messageElement.className = 'funds-response-message error';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching balance:', error);
+                        messageElement.textContent = 'Error retrieving balance';
+                        messageElement.className = 'funds-response-message error';
+                    }
+                }
+            
+                document.getElementById('deposit-form').addEventListener('submit', async function(event) {
+                    event.preventDefault();
+            
+                    const amount = parseFloat(document.getElementById('deposit-amount').value);
+                    const access_token = localStorage.getItem('access_token');
+            
+                    const response = await fetch('http://127.0.0.1:8000/portfolio/deposit', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${access_token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ amount }),
+                    });
+            
+                    await handleResponse(response);
+                });
+            
+                document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
+                    event.preventDefault();
+            
+                    const amount = parseFloat(document.getElementById('withdraw-amount').value);
+                    const access_token = localStorage.getItem('access_token');
+            
+                    const response = await fetch('http://127.0.0.1:8000/portfolio/withdraw', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${access_token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ amount }),
+                    });
+            
+                    await handleResponse(response);
+                });
+            </script>
         </div>
-
-        <div class="history">
-            <h2>Transaction History</h2>
-                
-        </div>
-
-        <div class="funds">
-            <h2>Account Funds</h2>
-                
-        </div>
-
-        <div class="trade">
-            <h2>Trade Stocks</h2>
-                
-        </div>
-
-
-        <script>
-            window.onload = function() {
-                document.getElementById("funds").reset();
-                document.getElementById("trade").reset();
-            };
-        </script>
+    </div>
