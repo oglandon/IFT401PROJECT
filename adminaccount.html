@@ -212,8 +212,6 @@
                     <button type="submit">Withdraw</button>
                     <div class="funds-response-message" id="Withdraw-response-message"></div>
                 </form>
-                
-        </div>
                 <script>
                     if (!localStorage.getItem('access_token')) {
                         console.error("No access token found. Please log in.");
@@ -222,11 +220,10 @@
                         console.log("Access Token:", localStorage.getItem('access_token'));
                     }
                 
-                    // Clears all response messages before a new form submission
                     function clearAllMessages() {
                         document.querySelectorAll('.funds-response-message, .trade-response-message').forEach(msg => {
-                            msg.textContent = ''; // Clear text
-                            msg.className = 'funds-response-message'; // Reset class
+                            msg.textContent = ''; 
+                            msg.className = 'funds-response-message'; 
                         });
                     }
                 
@@ -241,7 +238,6 @@
                                 const responseData = await response.json();
                                 console.log(responseData); 
                                 
-                                // Fetch and display the updated balance
                                 await fetchBalance(actionType);
                             }
                         } catch (error) {
@@ -279,7 +275,7 @@
                 
                     document.getElementById('deposit-form').addEventListener('submit', async function(event) {
                         event.preventDefault();
-                        clearAllMessages(); // Clears messages before processing
+                        clearAllMessages(); 
                 
                         const amount = parseFloat(document.getElementById('deposit-amount').value);
                         const access_token = localStorage.getItem('access_token');
@@ -298,7 +294,7 @@
                 
                     document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
                         event.preventDefault();
-                        clearAllMessages(); // Clears messages before processing
+                        clearAllMessages(); 
                 
                         const amount = parseFloat(document.getElementById('withdraw-amount').value);
                         const access_token = localStorage.getItem('access_token');
@@ -315,12 +311,10 @@
                         await handleFundsResponse(response, "Withdraw");
                     });
                 
-                    // Attach clearAllMessages() to all forms (Deposit, Withdraw, Buy, Sell)
                     document.querySelectorAll('form').forEach(form => {
                         form.addEventListener('submit', clearAllMessages);
                     });
                 </script>
-            </div>
         </div>
 
  <!-- TRADE STOCKS -->
@@ -336,7 +330,7 @@
                 <div class="trade-response-message" id="Buy-trade-response"></div>
             </form>
 
-            <h3 id="sellstock">Sell A Stock:</h3>
+            <h3>Sell A Stock</h3>
             <form id="sellstock">
                 <label for="ticker">Stock To Sell:</label>
                 <input type="text" id="ticker_sell" name="ticker"  required placeholder="Ticker Symbol">
@@ -355,11 +349,10 @@
                     console.log("Access Token:", localStorage.getItem('access_token'));
                 }
             
-                // Clears all response messages before a new form submission
                 function clearAllMessages() {
                     document.querySelectorAll('.funds-response-message, .trade-response-message').forEach(msg => {
-                        msg.textContent = ''; // Clear text
-                        msg.className = 'funds-response-message'; // Reset class
+                        msg.textContent = ''; 
+                        msg.className = 'funds-response-message'; 
                     });
                 }
             
@@ -374,7 +367,6 @@
                             const responseData = await response.json();
                             console.log(responseData); 
                             
-                            // Fetch and display the updated balance
                             await fetchBalance(actionType);
                         }
                     } catch (error) {
@@ -448,7 +440,6 @@
                     await handleFundsResponse(response, "Withdraw");
                 });
             
-                // ✅ Handle trade responses separately for buy and sell
                 async function handleTradeResponse(response, actionType) {
                     try {
                         const messageElement = document.getElementById(`${actionType}-trade-response`);
@@ -470,7 +461,6 @@
                     }
                 }
             
-                // ✅ Buy Stock
                 document.getElementById('buystock').addEventListener('submit', async function(event) {
                     event.preventDefault();
                     clearAllMessages();
@@ -491,30 +481,40 @@
                     await handleTradeResponse(response, "Buy");
                 });
             
-                // ✅ Sell Stock
                 document.getElementById('sellstock').addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    clearAllMessages();
-            
+                    event.preventDefault(); 
+                    clearAllMessages(); 
+
                     const ticker = document.getElementById('ticker_sell').value;
                     const quantity = parseFloat(document.getElementById('quantity_sell').value);
                     const access_token = localStorage.getItem('access_token');
-            
-                    const response = await fetch('http://127.0.0.1:8000/trade/sell', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${access_token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ticker, quantity })
-                    });
-            
-                    await handleTradeResponse(response, "Sell");
+
+                    if (!ticker || quantity <= 0) {
+                        alert('Please enter a valid stock ticker and quantity.');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/trade/sell', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${access_token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ ticker, quantity })
+                        });
+
+                        await handleTradeResponse(response, "Sell");
+                    } catch (error) {
+                        console.error('Error during trade:', error);
+                        alert('Error processing trade request.');
+                    }
                 });
-            
-                // Attach clearAllMessages() to all forms (Deposit, Withdraw, Buy, Sell)
+
                 document.querySelectorAll('form').forEach(form => {
-                    form.addEventListener('submit', clearAllMessages);
+                    form.addEventListener('submit', function(event) {
+                        clearAllMessages();
+                    });
                 });
             </script>
         </div>
