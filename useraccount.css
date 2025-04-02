@@ -1,8 +1,8 @@
 
 form {
     width: 100%;
-    max-width: 500px; /* Set a max-width for form */
-    margin: 0 auto; /* Center the form */
+    max-width: 500px; 
+    margin: 0 auto; 
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -12,7 +12,6 @@ form {
     margin-bottom: 100px;
 }
 
-/* For inputs, textareas, and selects, make sure they are full-width */
 input[type="text"],
 input[type="number"],
 input[type="email"],
@@ -29,7 +28,6 @@ textarea {
     margin: auto;
 }
 
-/* Adjust button to be consistent with other form inputs */
 button {
     background-color: #549BCC;
     color: black;
@@ -39,7 +37,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 20%; /* Make the button full-width */
+    width: 20%; 
     margin: auto;
 }
 
@@ -69,7 +67,7 @@ label {
     margin-bottom: 10px;
 }
 
-#funds-response-message, #trade-response-message {
+#Withdraw-response-message, #Deposit-response-message {
     color: #549BCC;
 }
 
@@ -83,4 +81,8 @@ label {
 
 h3#sellstock {
     margin-top: -80px;
+}
+
+#Buy-trade-response, #Sell-trade-response {
+    color: #549BCC;
 }

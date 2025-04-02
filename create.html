@@ -74,7 +74,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data && data.username) {  // Check if the response has the username field (successful creation)
+                        if (data && data.username) {  
                             alert('Account created successfully!');
                         } else {
                             alert('Failed to create account!');

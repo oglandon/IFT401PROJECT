@@ -41,11 +41,10 @@
         
         <script>
             document.getElementById("adminloginform").addEventListener("submit", async function(event) {
-                event.preventDefault();  // Prevent the default form submission
+                event.preventDefault();  
                 const username = document.getElementById("username").value;
                 const password = document.getElementById("password").value;
         
-                // Call the loginUser function with the username and password
                 await loginUser(username, password);
             });
         </script>
@@ -59,7 +58,6 @@
                 const loginEndpoint = 'http://127.0.0.1:8000/user/token';
 
                 try {
-                    // Send POST request to /token endpoint to get the JWT token
                     const response = await fetch(loginEndpoint, {
                         method: 'POST',
                         headers: {
@@ -73,14 +71,13 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        const access_token = data.access_token;  // Extract token from response
-                        localStorage.setItem('access_token', access_token);  // Store token for future use
+                        const access_token = data.access_token;  
+                        localStorage.setItem('access_token', access_token); 
                         alert('Login successful!');
                         
-                        // Now, pull the user data (like username and email)
+                       
                         await fetchUserData(access_token);
                         
-                        // Now, verify if the user is an admin
                         await checkAdminStatus(access_token);
                     } else {
                         alert('Invalid credentials!');
@@ -92,22 +89,21 @@
             }
 
             async function fetchUserData(access_token) {
-                const userEndpoint = 'http://127.0.0.1:8000/user/me';  // Endpoint to fetch user data
+                const userEndpoint = 'http://127.0.0.1:8000/user/me'; 
                 
                 try {
                     const response = await fetch(userEndpoint, {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${access_token}`  // Attach the token for authorization
+                            'Authorization': `Bearer ${access_token}`  
                         }
                     });
 
                     if (response.ok) {
                         const userData = await response.json();
-                        console.log('User data:', userData);  // Successfully retrieved user data
+                        console.log('User data:', userData);  
 
-                        // Store user data in localStorage or sessionStorage for use in the frontend
-                        localStorage.setItem('userData', JSON.stringify(userData));  // Store user data
+                        localStorage.setItem('userData', JSON.stringify(userData)); 
                     } else {
                         console.error('Failed to fetch user data:', response.status);
                         alert('Failed to retrieve user data!');
@@ -124,19 +120,17 @@
                     const response = await fetch(adminEndpoint, {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${access_token}`  // Attach the token for authorization
+                            'Authorization': `Bearer ${access_token}` 
                         }
                     });
 
                     if (response.ok) {
                         const adminData = await response.json();
-                        console.log('Admin data:', adminData);  // Successfully accessed the admin resource
+                        console.log('Admin data:', adminData);  
                         
-                        // Store admin data in localStorage or sessionStorage
                         localStorage.setItem('adminData', JSON.stringify(adminData));
 
-                        // Redirect to the admin account page or perform admin-specific actions
-                        window.location.href = 'adminaccount.html';  // This can be your admin dashboard or page
+                        window.location.href = 'adminaccount.html'; 
                     } else if (response.status === 403) {
                         alert('You do not have admin privileges!');
                     } else {
