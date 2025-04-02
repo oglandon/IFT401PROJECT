@@ -209,8 +209,9 @@
                     <label for="withdraw-amount-label">Amount to Withdraw:</label>
                     <input type="number" id="withdraw-amount" name="amount" min="0" step="any" required>
                     <button type="submit">Withdraw</button>
+                    <div class="funds-response-message" id="funds-response-message"></div>
                 </form>
-                <div class="funds-response-message" id="funds-response-message"></div>
+                
         </div>
                 <script>
                     if (!localStorage.getItem('access_token')) {
@@ -327,8 +328,9 @@
                 <label for="sellstock">Amount To Sell:</label>
                 <input type="number" id="quantity_sell" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
+                <div class="trade-response-message" id="trade-response-message"></div>
             </form>
-            <div class="trade-response-message" id="trade-response-message"></div>
+            
         </div>
             <script>
                     // ✅ Ensure the user is logged in with an access token
