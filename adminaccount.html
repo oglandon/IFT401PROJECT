@@ -409,7 +409,7 @@
                             'Authorization': `Bearer ${access_token}`,
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ ticker: ticker, quantity: quantity })
+                        body: JSON.stringify({ticker, quantity })
                     });
 
                     await handleResponse(response, 'Bought', ticker, quantity);
@@ -428,7 +428,7 @@
                             'Authorization': `Bearer ${access_token}`,
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ ticker: ticker, quantity: quantity })
+                        body: JSON.stringify({ticker, quantity })
                     });
 
                     await handleResponse(response, 'Sold', ticker, quantity);
