@@ -69,7 +69,7 @@ label {
     margin-bottom: 10px;
 }
 
-#funds-response-message {
+#Withdraw-response-message, #Deposit-response-message {
     color: #549BCC;
 }
 
@@ -85,6 +85,6 @@ h3#sellstock {
     margin-top: -80px;
 }
 
-#trade-response-message {
+#Buy-trade-response, #Sell-trade-response {
     color: #549BCC;
 }
