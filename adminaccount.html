@@ -555,7 +555,7 @@
           
             async function loadPortfolio() {
               try {
-                const res = await fetch("/portfolio/balance", { headers });
+                const res = await fetch("/transactions/portfolio", { headers });
                 if (!res.ok) throw new Error("Failed to load portfolio");
                 const data = await res.json();
           
@@ -568,7 +568,7 @@
           
             async function loadTransactions(page = 1, size = 20) {
               try {
-                const res = await fetch(`/portfolio/transactions?page=${page}&size=${size}`, { headers });
+                const res = await fetch(`/transactions/transactions?page=${page}&size=${size}`, { headers });
                 if (!res.ok) throw new Error("Failed to load transactions");
                 const data = await res.json();
           
