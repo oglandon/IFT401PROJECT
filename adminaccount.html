@@ -528,11 +528,9 @@
             <table id="transaction-table">
             <thead>
                 <tr>
-                <th>ID</th>
                 <th>Ticker</th>
                 <th>Quantity</th>
                 <th>Price</th>
-                <th>Amount</th>
                 <th>Type</th>
                 <th>Timestamp</th>
                 </tr>
@@ -541,93 +539,79 @@
             </table>
         </div>
         <script>
-            const token = localStorage.getItem("access_token");
-          
-            if (!token) {
-              alert("User not authenticated. Please log in.");
-              window.location.href = "/login"; 
-            }
-          
-            const headers = {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json"
-            };
-          
-            async function loadPortfolio() {
-              try {
-                const res = await fetch("/transactions/portfolio", { headers });
-                if (!res.ok) throw new Error("Failed to load portfolio");
-                const data = await res.json();
-          
-                document.getElementById("username").textContent = data.username;
-                document.getElementById("cash-balance").textContent = parseFloat(data.cash_balance).toFixed(2);
-              } catch (err) {
-                console.error("Error loading portfolio:", err);
-              }
-            }
-          
-            async function loadTransactions(page = 1, size = 20) {
-              try {
-                const res = await fetch(`/transactions/transactions?page=${page}&size=${size}`, { headers });
-                if (!res.ok) throw new Error("Failed to load transactions");
-                const data = await res.json();
-          
-                const tableBody = document.querySelector("#transaction-table tbody");
-                tableBody.innerHTML = "";
-          
-                data.transactions.forEach(txn => {
-                  const row = document.createElement("tr");
-          
-                  row.innerHTML = `
-                    <td>${txn.id}</td>
-                    <td>${txn.ticker || "-"}</td>
-                    <td>${txn.quantity ?? "-"}</td>
-                    <td>${txn.price !== null ? txn.price.toFixed(2) : "-"}</td>
-                    <td>${txn.amount !== null ? txn.amount.toFixed(2) : "-"}</td>
-                    <td>${txn.transaction_type}</td>
-                    <td>${new Date(txn.timestamp).toLocaleString()}</td>
-                  `;
-          
-                  tableBody.appendChild(row);
-                });
-          
-              } catch (err) {
-                console.error("Error loading transactions:", err);
-              }
-            }
-          
-            async function refreshUserData() {
-              await loadPortfolio();
-              await loadTransactions();
-            }
-          
-            document.addEventListener("DOMContentLoaded", () => {
-              refreshUserData();
-            });
-          
-            async function handleTransaction(endpoint, amount) {
-              if (amount <= 0) return alert("Amount must be positive");
-          
-              try {
-                const res = await fetch(`/${endpoint}`, {
-                  method: "POST",
-                  headers,
-                  body: JSON.stringify({ amount })
-                });
-          
-                if (!res.ok) {
-                  const errorData = await res.json();
-                  alert(`Error: ${errorData.detail}`);
-                  return;
+            async function fetchPortfolio() {
+                const apiUrl = 'http://127.0.0.1:8000/transactions/portfolio';
+        
+                try {
+                    const token = localStorage.getItem("access_token");
+                    const response = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch portfolio: ${response.status}`);
+                    }
+        
+                    const data = await response.json();
+                    const portfolioDiv = document.getElementById("portfolio-info");
+                    portfolioDiv.innerHTML = `
+                        <p><strong>Username:</strong> ${data.username}</p>
+                        <p><strong>Cash Balance:</strong> $${parseFloat(data.cash_balance).toFixed(2)}</p>
+                    `;
+        
+                } catch (error) {
+                    console.error("Error fetching portfolio:", error);
+                    alert(`Portfolio error: ${error.message}`);
                 }
-          
-                alert(`${endpoint.charAt(0).toUpperCase() + endpoint.slice(1)} successful`);
-                refreshUserData();
-              } catch (err) {
-                console.error(`${endpoint} failed:`, err);
-              }
             }
-          </script>
+        
+            async function fetchTransactionHistory() {
+                const apiUrl = 'http://127.0.0.1:8000/transactions/transactions?page=1&size=10';
+        
+                try {
+                    const token = localStorage.getItem("access_token");
+                    const response = await fetch(apiUrl, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch transaction history: ${response.status}`);
+                    }
+        
+                    const result = await response.json();
+                    const transactions = result.transactions;
+        
+                    const tableBody = document.querySelector("#transaction-history tbody");
+                    tableBody.innerHTML = "";
+        
+                    transactions.forEach(tx => {
+                        const row = `
+                            <tr>
+                                <td>${tx.ticker}</td>
+                                <td>${tx.quantity}</td>
+                                <td>$${tx.price.toFixed(2)}</td>
+                                <td>${tx.transaction_type}</td>
+                                <td>${new Date(tx.timestamp).toLocaleString()}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+        
+                } catch (error) {
+                    console.error("Error fetching transactions:", error);
+                    alert(`Transaction error: ${error.message}`);
+                }
+            }
+        
+            window.onload = () => {
+                fetchPortfolio();
+                fetchTransactionHistory();
+            };
+        </script>
 
  <!-- LOGOUT BUTTON -->
         <div class="logout">
