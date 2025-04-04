@@ -518,6 +518,7 @@
 
 
  <!-- TRANSACTION HISTORY -->
+    <div>
         <div id="portfolio">
             <h2>Portfolio</h2>
             <p>Cash Balance: $<span id="cash-balance"></span></p>
@@ -539,24 +540,35 @@
             </table>
         </div>
         <script>
+            async function getAccessToken() {
+                return localStorage.getItem("access_token");
+            }
+        
             async function fetchPortfolio() {
                 const apiUrl = 'http://127.0.0.1:8000/transactions/portfolio';
+                const token = await getAccessToken();
+        
+                if (!token) {
+                    console.warn("No access token found. Redirecting to login...");
+                    window.location.href = "/login.html";  // Redirect to login page
+                    return;
+                }
         
                 try {
-                    const token = localStorage.getItem("access_token");
                     const response = await fetch(apiUrl, {
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        }
+                        headers: { "Authorization": `Bearer ${token}` }
                     });
         
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch portfolio: ${response.status}`);
+                    if (response.status === 401) {
+                        console.warn("Invalid token. Redirecting to login...");
+                        window.location.href = "/login.html";  
+                        return;
                     }
         
+                    if (!response.ok) throw new Error(`Failed to fetch portfolio: ${response.status}`);
+        
                     const data = await response.json();
-                    const portfolioDiv = document.getElementById("portfolio-info");
-                    portfolioDiv.innerHTML = `
+                    document.getElementById("portfolio-info").innerHTML = `
                         <p><strong>Username:</strong> ${data.username}</p>
                         <p><strong>Cash Balance:</strong> $${parseFloat(data.cash_balance).toFixed(2)}</p>
                     `;
@@ -569,22 +581,29 @@
         
             async function fetchTransactionHistory() {
                 const apiUrl = 'http://127.0.0.1:8000/transactions/transactions?page=1&size=10';
+                const token = await getAccessToken();
+        
+                if (!token) {
+                    console.warn("No access token found. Redirecting to login...");
+                    window.location.href = "/login.html";  
+                    return;
+                }
         
                 try {
-                    const token = localStorage.getItem("access_token");
                     const response = await fetch(apiUrl, {
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        }
+                        headers: { "Authorization": `Bearer ${token}` }
                     });
         
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch transaction history: ${response.status}`);
+                    if (response.status === 401) {
+                        console.warn("Invalid token. Redirecting to login...");
+                        window.location.href = "/login.html";  
+                        return;
                     }
+        
+                    if (!response.ok) throw new Error(`Failed to fetch transaction history: ${response.status}`);
         
                     const result = await response.json();
                     const transactions = result.transactions;
-        
                     const tableBody = document.querySelector("#transaction-history tbody");
                     tableBody.innerHTML = "";
         
@@ -612,7 +631,7 @@
                 fetchTransactionHistory();
             };
         </script>
-
+    </div> 
  <!-- LOGOUT BUTTON -->
         <div class="logout">
             <button onclick="logout()">Logout</button>
