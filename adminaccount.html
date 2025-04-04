@@ -529,6 +529,7 @@
             <table id="transaction-table">
             <thead>
                 <tr>
+                <th>ID</th>
                 <th>Ticker</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -606,6 +607,7 @@
                     transactions.forEach(tx => {
                         const row = `
                             <tr>
+                                <td>${tx.id}</td>
                                 <td>${tx.ticker}</td>
                                 <td>${tx.quantity}</td>
                                 <td>$${tx.price.toFixed(2)}</td>
