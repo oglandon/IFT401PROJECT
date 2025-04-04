@@ -87,3 +87,110 @@ h3#sellstock {
 #Buy-trade-response, #Sell-trade-response {
     color: #549BCC;
 }
+
+p {
+    color: #549BCC;
+}
+
+
+/* transaction history table */
+table {
+    width: 1800px;
+}
+
+th {
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    background-color: #2c2c2c;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+thead {
+    background: #549BCC;  
+    color: black;
+    font-weight: bold;
+}
+
+thead th {
+    padding: 16px;
+    font-size: 18px;
+    text-align: left;
+    text-decoration: bold;
+}
+
+tbody tr {
+    border-bottom: 1px solid black;
+    transition: all 0.3s ease;
+}
+
+
+tbody tr:nth-child(odd) {
+    background-color: #3b3b3b; 
+}
+
+tbody tr:nth-child(even) {
+    background-color: #1a1a1a;  
+}
+
+tbody tr:hover {
+    background-color: black;
+    transform: scale(1.012);   
+    transition: all 0.3s ease;
+}
+
+
+td {
+    padding: 16px;
+    font-size: 15px;
+    text-align: left;
+    color: white;
+}
+
+
+.price-up {
+    color: #28a745;  
+    font-weight: bold;
+}
+
+.price-down {
+    color: #dc3545; 
+    font-weight: bold;
+}
+
+
+.market-cap {
+    font-weight: bold;
+    color: white; 
+}
+
+
+.daily-high {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.daily-low {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+
+@media screen and (max-width: 768px) {
+    table {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    thead th, td {
+        padding: 12px;
+    }
+}

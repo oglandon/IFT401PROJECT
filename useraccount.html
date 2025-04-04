@@ -25,7 +25,8 @@
         </header>
     </div>
 
-    
+    <h1>User Account.</h1>
+
 <!-- FUNDS MANAGEMENT -->
     <div class="funds">
     <h2>Account Funds</h2>
@@ -348,3 +349,15 @@
         </script>
     </div>
 
+<!-- LOGOUT BUTTON -->
+    <div class="logout">
+        <button onclick="logout()">Logout</button>
+
+        <script>
+            // Logout function
+            function logout() {
+                localStorage.removeItem('access_token');
+                window.location.href = 'user.html';
+            }
+        </script>
+    </div>
