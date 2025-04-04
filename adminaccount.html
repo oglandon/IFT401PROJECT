@@ -549,9 +549,8 @@
                 const token = await getAccessToken();
         
                 if (!token) {
-                    console.warn("No access token found. Redirecting to login...");
-                    window.location.href = "/login.html";  // Redirect to login page
-                    return;
+                    console.warn("No access token found. Please log in.");
+                    return;  // Stop further execution
                 }
         
                 try {
@@ -560,9 +559,8 @@
                     });
         
                     if (response.status === 401) {
-                        console.warn("Invalid token. Redirecting to login...");
-                        window.location.href = "/login.html";  
-                        return;
+                        console.warn("Invalid token. Please log in again.");
+                        return;  // Stop further execution
                     }
         
                     if (!response.ok) throw new Error(`Failed to fetch portfolio: ${response.status}`);
@@ -584,9 +582,8 @@
                 const token = await getAccessToken();
         
                 if (!token) {
-                    console.warn("No access token found. Redirecting to login...");
-                    window.location.href = "/login.html";  
-                    return;
+                    console.warn("No access token found. Please log in.");
+                    return;  // Stop further execution
                 }
         
                 try {
@@ -595,9 +592,8 @@
                     });
         
                     if (response.status === 401) {
-                        console.warn("Invalid token. Redirecting to login...");
-                        window.location.href = "/login.html";  
-                        return;
+                        console.warn("Invalid token. Please log in again.");
+                        return;  // Stop further execution
                     }
         
                     if (!response.ok) throw new Error(`Failed to fetch transaction history: ${response.status}`);
