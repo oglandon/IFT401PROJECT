@@ -534,9 +534,6 @@
                     "Content-Type": "application/json"
                 };
         
-                let currentPage = 1;
-                const pageSize = 10;
-        
                 if (!token) {
                     alert("Access token not found. Please log in.");
                     return;
@@ -552,20 +549,14 @@
                         const stocksData = await stocksRes.json();
                         const stockText = stocksData.owned_stocks.map(stock => `${stock.ticker}: ${stock.quantity}`).join(", ");
                         document.getElementById("owned_stocks").textContent = stockText || "None";
-        
                     } catch (error) {
                         console.error("Error loading portfolio data:", error);
                     }
                 }
         
-                function refreshData() {
-                    loadBalanceAndStocks();
-                    loadTransactions(currentPage);
-                }
+                loadBalanceAndStocks();
         
-                refreshData();
-        
-                setInterval(refreshData, 10000);
+                setInterval(loadBalanceAndStocks, 10000);
             });
         </script>
     </div> 
@@ -604,6 +595,64 @@
                 alert("Access token not found. Please log in.");
                 return;
             }
+    
+            async function loadTransactions(page = 1) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/transactions/transactions?page=${page}&size=${pageSize}`, {
+                        headers
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch transactions");
+                    }
+    
+                    const data = await response.json();
+                    const tableBody = document.querySelector("#transaction-table tbody");
+                    tableBody.innerHTML = "";
+    
+                    data.transactions.forEach(tx => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${tx.id}</td>
+                            <td>${tx.ticker}</td>
+                            <td>${tx.quantity}</td>
+                            <td>$${tx.price.toFixed(2)}</td>
+                            <td>${tx.transaction_type}</td>
+                            <td>${new Date(tx.timestamp).toLocaleString()}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+    
+                    updatePagination(data.page, data.total);
+                } catch (error) {
+                    console.error("Error loading transactions:", error);
+                }
+            }
+    
+            function updatePagination(current, total) {
+                const paginationDiv = document.getElementById("pagination");
+                paginationDiv.innerHTML = "";
+    
+                const totalPages = Math.ceil(total / pageSize);
+                if (totalPages <= 1) return;
+    
+                for (let i = 1; i <= totalPages; i++) {
+                    const btn = document.createElement("button");
+                    btn.textContent = i;
+                    btn.disabled = (i === current);
+                    btn.addEventListener("click", () => {
+                        currentPage = i;
+                        loadTransactions(currentPage);
+                    });
+                    paginationDiv.appendChild(btn);
+                }
+            }
+    
+            loadTransactions(currentPage);
+    
+            setInterval(() => {
+                loadTransactions(currentPage);
+            }, 10000);
         });
     </script>
 
