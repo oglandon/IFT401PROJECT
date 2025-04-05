@@ -74,7 +74,7 @@
                 }
 
                 try {
-                    const response = await fetch('http://127.0.0.1:8000/stocks/stocks', {
+                    const response = await fetch('http://127.0.0.1:8000/stocks/create stocks', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -589,7 +589,23 @@
         </table>
         <div id="pagination" style="margin-top: 10px;"></div>
     </div>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access_token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            };
+    
+            let currentPage = 1;
+            const pageSize = 10;
+    
+            if (!token) {
+                alert("Access token not found. Please log in.");
+                return;
+            }
+        });
+    </script>
 
 
  <!-- LOGOUT BUTTON -->
@@ -597,7 +613,6 @@
             <button onclick="logout()">Logout</button>
 
             <script>
-                // Logout function
                 function logout() {
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('adminData');
