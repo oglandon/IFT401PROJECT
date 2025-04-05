@@ -561,7 +561,7 @@
                 async function loadBalanceAndStocks() {
                     try {
                         // Balance
-                        const balanceRes = await fetch("/portfolio/balance", { headers });
+                        const balanceRes = await fetch("http://127.0.0.1:8000/portfolio/balance", { headers });
                         const balanceData = await balanceRes.json();
                         document.getElementById("cash-balance").textContent = balanceData.cash_balance.toFixed(2);
             
@@ -578,7 +578,7 @@
             
                 async function loadTransactions(page = 1) {
                     try {
-                        const response = await fetch(`/transactions/transactions?page=${page}&size=${pageSize}`, {
+                        const response = await fetch(`http://127.0.0.1:8000/transactions/transactions?page=${page}&size=${pageSize}`, {
                             headers
                         });
             
