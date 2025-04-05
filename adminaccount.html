@@ -566,7 +566,7 @@
                         document.getElementById("cash-balance").textContent = balanceData.cash_balance.toFixed(2);
             
                         // Owned Stocks
-                        const stocksRes = await fetch("/portfolio/owned_stocks", { headers });
+                        const stocksRes = await fetch("http://127.0.0.1:8000/portfolio/owned_stocks", { headers });
                         const stocksData = await stocksRes.json();
                         const stockText = stocksData.owned_stocks.map(stock => `${stock.ticker}: ${stock.quantity}`).join(", ");
                         document.getElementById("owned_stocks").textContent = stockText || "None";
