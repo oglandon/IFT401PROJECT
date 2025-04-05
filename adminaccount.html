@@ -549,47 +549,45 @@
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 };
-            
+        
                 let currentPage = 1;
                 const pageSize = 10;
-            
+        
                 if (!token) {
                     alert("Access token not found. Please log in.");
                     return;
                 }
-            
+        
                 async function loadBalanceAndStocks() {
                     try {
-                        // Balance
                         const balanceRes = await fetch("http://127.0.0.1:8000/portfolio/balance", { headers });
                         const balanceData = await balanceRes.json();
                         document.getElementById("cash-balance").textContent = balanceData.cash_balance.toFixed(2);
-            
-                        // Owned Stocks
+        
                         const stocksRes = await fetch("http://127.0.0.1:8000/portfolio/owned_stocks", { headers });
                         const stocksData = await stocksRes.json();
                         const stockText = stocksData.owned_stocks.map(stock => `${stock.ticker}: ${stock.quantity}`).join(", ");
                         document.getElementById("owned_stocks").textContent = stockText || "None";
-            
+        
                     } catch (error) {
                         console.error("Error loading portfolio data:", error);
                     }
                 }
-            
+        
                 async function loadTransactions(page = 1) {
                     try {
                         const response = await fetch(`http://127.0.0.1:8000/transactions/transactions?page=${page}&size=${pageSize}`, {
                             headers
                         });
-            
+        
                         if (!response.ok) {
                             throw new Error("Failed to fetch transactions");
                         }
-            
+        
                         const data = await response.json();
                         const tableBody = document.querySelector("#transaction-table tbody");
                         tableBody.innerHTML = "";
-            
+        
                         data.transactions.forEach(tx => {
                             const row = document.createElement("tr");
                             row.innerHTML = `
@@ -602,21 +600,20 @@
                             `;
                             tableBody.appendChild(row);
                         });
-            
+        
                         updatePagination(data.page, data.total);
                     } catch (error) {
                         console.error("Error loading transactions:", error);
                     }
                 }
-            
+        
                 function updatePagination(current, total) {
                     const paginationDiv = document.getElementById("pagination");
                     paginationDiv.innerHTML = "";
-            
+        
                     const totalPages = Math.ceil(total / pageSize);
-            
                     if (totalPages <= 1) return;
-            
+        
                     for (let i = 1; i <= totalPages; i++) {
                         const btn = document.createElement("button");
                         btn.textContent = i;
@@ -628,10 +625,15 @@
                         paginationDiv.appendChild(btn);
                     }
                 }
-            
-                // Initial load
-                loadBalanceAndStocks();
-                loadTransactions(currentPage);
+        
+                function refreshData() {
+                    loadBalanceAndStocks();
+                    loadTransactions(currentPage);
+                }
+        
+                refreshData();
+        
+                setInterval(refreshData, 10000);
             });
         </script>
     </div> 
