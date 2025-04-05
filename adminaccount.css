@@ -194,3 +194,27 @@ td {
         padding: 12px;
     }
 }
+
+#portfolio {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+#portfolio h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #549BCC;
+}
+
+#portfolio p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #549BCC;
+    margin-bottom: 20px;
+}
