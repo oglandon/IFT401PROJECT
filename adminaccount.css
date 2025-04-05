@@ -59,6 +59,12 @@ select {
     margin: auto;
 }
 
+.logout {
+    padding-bottom: 50px;
+    width: 500px;
+    margin: auto;
+}
+
 label {
     color: #549BCC;
 }
