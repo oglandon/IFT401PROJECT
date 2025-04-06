@@ -610,13 +610,13 @@
                     const tableBody = document.querySelector("#transaction-table tbody");
                     tableBody.innerHTML = "";
     
-                    data.transactions.forEach(tx => {
+                    data.forEach(tx => {
                         const row = document.createElement("tr");
                         row.innerHTML = `
                             <td>${tx.id}</td>
-                            <td>${tx.ticker}</td>
-                            <td>${tx.quantity}</td>
-                            <td>$${tx.price.toFixed(2)}</td>
+                            <td>${tx.ticker ?? ""}</td>
+                            <td>${tx.quantity ?? ""}</td>
+                            <td>${tx.price ? "$" + tx.price.toFixed(2) : ""}</td>
                             <td>${tx.transaction_type}</td>
                             <td>${new Date(tx.timestamp).toLocaleString()}</td>
                         `;
