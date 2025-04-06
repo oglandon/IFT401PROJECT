@@ -26,7 +26,20 @@
             </header>
         </div>
 
-        <h1>Admin Account.</h1>
+<!-- LOGOUT BUTTON -->
+    <div class="logout">
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('adminData');
+            window.location.href = 'admin.html';
+        }
+    </script>
+    </div>
+
+    <h1>Admin Account.</h1>
 
 <!-- STOCK CREATION -->
         <div class="stock-creation">
@@ -659,15 +672,3 @@
     </script>
 
 
- <!-- LOGOUT BUTTON -->
-        <div class="logout">
-            <button onclick="logout()">Logout</button>
-
-            <script>
-                function logout() {
-                    localStorage.removeItem('access_token');
-                    localStorage.removeItem('adminData');
-                    window.location.href = 'admin.html';
-                }
-            </script>
-        </div>

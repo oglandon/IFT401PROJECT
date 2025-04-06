@@ -24,6 +24,18 @@
             </section>
         </header>
     </div>
+    
+<!-- LOGOUT BUTTON -->
+    <div class="logout">
+        <button onclick="logout()">Logout</button>
+
+        <script>
+            function logout() {
+                localStorage.removeItem('access_token');
+                window.location.href = 'user.html';
+            }
+        </script>
+    </div>
 
     <h1>User Account.</h1>
 
@@ -350,67 +362,57 @@
     </div>
 
  <!-- PORTFOLIO -->
- <div>
-    <h2>Portfolio</h2>
-    <div id="portfolio">
-        <p>Cash Balance:<br> $<span id="cash-balance"></span></p>
-        <p>Owned Stocks:<br> <span id="owned_stocks"></span></p>
-    </div>
-    
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("access_token");
-            const headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            };
-    
-            let currentPage = 1;
-            const pageSize = 10;
-    
-            if (!token) {
-                alert("Access token not found. Please log in.");
-                return;
-            }
-    
-            async function loadBalanceAndStocks() {
-                try {
-                    const balanceRes = await fetch("http://127.0.0.1:8000/portfolio/balance", { headers });
-                    const balanceData = await balanceRes.json();
-                    document.getElementById("cash-balance").textContent = balanceData.cash_balance.toFixed(2);
-    
-                    const stocksRes = await fetch("http://127.0.0.1:8000/portfolio/owned_stocks", { headers });
-                    const stocksData = await stocksRes.json();
-                    const stockText = stocksData.owned_stocks.map(stock => `${stock.ticker}: ${stock.quantity}`).join(", ");
-                    document.getElementById("owned_stocks").textContent = stockText || "None";
-    
-                } catch (error) {
-                    console.error("Error loading portfolio data:", error);
-                }
-            }
-    
-            function refreshData() {
-                loadBalanceAndStocks();
-                loadTransactions(currentPage);
-            }
-    
-            refreshData();
-    
-            setInterval(refreshData, 10000);
-        });
-    </script>
-</div> 
-
-
-<!-- LOGOUT BUTTON -->
-    <div class="logout">
-        <button onclick="logout()">Logout</button>
+    <div>
+        <h2>Portfolio</h2>
+        <div id="portfolio">
+            <p>Cash Balance:<br> $<span id="cash-balance"></span></p>
+            <p>Owned Stocks:<br> <span id="owned_stocks"></span></p>
+        </div>
+        
 
         <script>
-            function logout() {
-                localStorage.removeItem('access_token');
-                window.location.href = 'user.html';
-            }
+            document.addEventListener("DOMContentLoaded", () => {
+                const token = localStorage.getItem("access_token");
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                };
+        
+                let currentPage = 1;
+                const pageSize = 10;
+        
+                if (!token) {
+                    alert("Access token not found. Please log in.");
+                    return;
+                }
+        
+                async function loadBalanceAndStocks() {
+                    try {
+                        const balanceRes = await fetch("http://127.0.0.1:8000/portfolio/balance", { headers });
+                        const balanceData = await balanceRes.json();
+                        document.getElementById("cash-balance").textContent = balanceData.cash_balance.toFixed(2);
+        
+                        const stocksRes = await fetch("http://127.0.0.1:8000/portfolio/owned_stocks", { headers });
+                        const stocksData = await stocksRes.json();
+                        const stockText = stocksData.owned_stocks.map(stock => `${stock.ticker}: ${stock.quantity}`).join(", ");
+                        document.getElementById("owned_stocks").textContent = stockText || "None";
+        
+                    } catch (error) {
+                        console.error("Error loading portfolio data:", error);
+                    }
+                }
+        
+                function refreshData() {
+                    loadBalanceAndStocks();
+                    loadTransactions(currentPage);
+                }
+        
+                refreshData();
+        
+                setInterval(refreshData, 10000);
+            });
         </script>
-    </div>
+    </div> 
+
+
+

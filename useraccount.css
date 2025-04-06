@@ -224,3 +224,9 @@ td {
     color: #549BCC;
     margin-bottom: 20px;
 }
+
+.logout {
+    float: right;
+    z-index: 0;
+    position: absolute;
+}
