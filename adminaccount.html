@@ -564,11 +564,12 @@
 
 <!-- TRANSACTION HISTORY -->
     <div id="transaction-history-section">
-        <h2>Transaction History</h2>
+        <h2>All User's Transaction History</h2>
         <table id="transaction-table">
         <thead>
             <tr>
             <th>ID</th>
+            <th>User ID</th>
             <th>Ticker</th>
             <th>Quantity</th>
             <th>Price</th>
@@ -614,6 +615,7 @@
                         const row = document.createElement("tr");
                         row.innerHTML = `
                             <td>${tx.id}</td>
+                            <td>${tx.user_id}</td>
                             <td>${tx.ticker ?? ""}</td>
                             <td>${tx.quantity ?? ""}</td>
                             <td>${tx.price ? "$" + tx.price.toFixed(2) : ""}</td>
