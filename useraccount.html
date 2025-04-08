@@ -162,181 +162,210 @@
         </script>
     </div>
 
-<!-- TRADE STOCKS -->
+ <!-- TRADE STOCKS -->
     <div id="trade">
-        <h2>Trade Stocks</h2>
-        <h3>Buy A Stock</h3>
-        <form id="buystock">
-            <label for="ticker">Stock To Buy:</label>
-            <input type="text" id="ticker_buy" name="ticker" required placeholder="Ticker Symbol">
-            <label for="buystock">Amount To Buy:</label>
-            <input type="number" id="quantity_buy" name="quantity" min="0" step="any" required placeholder="Amount to Buy">
-            <button type="submit">Purchase</button>
-            <div class="trade-response-message" id="Buy-trade-response"></div>
-        </form>
+    <h2>Trade Stocks</h2>
+    <h3>Buy A Stock</h3>
+    <form id="buystock">
+        <label for="ticker">Stock To Buy:</label>
+        <input type="text" id="ticker_buy" name="ticker" required placeholder="Ticker Symbol">
+        <label for="buystock">Amount To Buy:</label>
+        <input type="number" id="quantity_buy" name="quantity" min="0" step="any" required placeholder="Amount to Buy">
+        <button type="submit">Purchase</button>
+        <button type="button" id="cancel-buy" style="display: none;">Cancel Buy</button>
+        <div class="trade-response-message" id="Buy-trade-response"></div>
+    </form>
 
-        <h3>Sell A Stock</h3>
-        <form id="sellstock">
-            <label for="ticker">Stock To Sell:</label>
-            <input type="text" id="ticker_sell" name="ticker"  required placeholder="Ticker Symbol">
-            <label for="sellstock">Amount To Sell:</label>
-            <input type="number" id="quantity_sell" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
-            <button type="submit">Sell</button>
-            <div class="trade-response-message" id="Sell-trade-response"></div>
-        </form>
-        <script>
-            if (!localStorage.getItem('access_token')) {
-                console.error("No access token found. Please log in.");
-                alert("You need to log in as an admin.");
-            } else {
-                console.log("Access Token:", localStorage.getItem('access_token'));
-            }
+    <h3>Sell A Stock</h3>
+    <form id="sellstock">
+        <label for="ticker">Stock To Sell:</label>
+        <input type="text" id="ticker_sell" name="ticker"  required placeholder="Ticker Symbol">
+        <label for="sellstock">Amount To Sell:</label>
+        <input type="number" id="quantity_sell" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
+        <button type="submit">Sell</button>
+        <button type="button" id="cancel-sell" style="display: none;">Cancel Sell</button>
+        <div class="trade-response-message" id="Sell-trade-response"></div>
+    </form>
+
+    <script>
+        let buyTimeout = null;
+        let sellTimeout = null;
         
-            function clearAllMessages() {
-                document.querySelectorAll('.funds-response-message, .trade-response-message').forEach(msg => {
-                    msg.textContent = ''; 
-                    msg.className = 'funds-response-message'; 
-                });
-            }
-        
-            async function handleFundsResponse(response, actionType) {
-                try {
-                    const messageElement = document.getElementById(`${actionType}-response-message`);
-        
-                    if (!response.ok) {
-                        messageElement.textContent = `Error: ${response.statusText}`;
-                        messageElement.className = 'funds-response-message error';
-                    } else {
-                        const responseData = await response.json();
-                        console.log(responseData); 
-                        
-                        await fetchBalance(actionType);
-                    }
-                } catch (error) {
-                    console.error('Error handling response:', error);
-                    document.getElementById(`${actionType}-response-message`).textContent = 'Error processing request';
-                }
-            }
-        
-            async function fetchBalance(actionType) {
+        if (!localStorage.getItem('access_token')) {
+            console.error("No access token found. Please log in.");
+            alert("You need to log in as an admin.");
+        } else {
+            console.log("Access Token:", localStorage.getItem('access_token'));
+        }
+    
+        function clearAllMessages() {
+            document.querySelectorAll('.funds-response-message, .trade-response-message').forEach(msg => {
+                msg.textContent = ''; 
+                msg.className = 'funds-response-message'; 
+            });
+        }
+    
+        async function handleFundsResponse(response, actionType) {
+            try {
                 const messageElement = document.getElementById(`${actionType}-response-message`);
-                const access_token = localStorage.getItem('access_token');
-        
-                try {
-                    const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${access_token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
-        
-                    if (balanceResponse.ok) {
-                        const balanceData = await balanceResponse.json();
-                        messageElement.textContent = `${actionType} successful! New Balance: $${balanceData.cash_balance.toFixed(2)}`;
-                        messageElement.className = 'funds-response-message success';
-                    } else {
-                        messageElement.textContent = `Error fetching balance: ${balanceResponse.statusText}`;
-                        messageElement.className = 'funds-response-message error';
-                    }
-                } catch (error) {
-                    console.error('Error fetching balance:', error);
-                    messageElement.textContent = 'Error retrieving balance';
+    
+                if (!response.ok) {
+                    messageElement.textContent = `Error: ${response.statusText}`;
+                    messageElement.className = 'funds-response-message error';
+                } else {
+                    const responseData = await response.json();
+                    console.log(responseData); 
+                    
+                    await fetchBalance(actionType);
                 }
+            } catch (error) {
+                console.error('Error handling response:', error);
+                document.getElementById(`${actionType}-response-message`).textContent = 'Error processing request';
             }
-        
-            document.getElementById('deposit-form').addEventListener('submit', async function(event) {
-                event.preventDefault();
-                clearAllMessages();
-        
-                const amount = parseFloat(document.getElementById('deposit-amount').value);
-                const access_token = localStorage.getItem('access_token');
-        
-                const response = await fetch('http://127.0.0.1:8000/portfolio/deposit', {
-                    method: 'POST',
+        }
+    
+        async function fetchBalance(actionType) {
+            const messageElement = document.getElementById(`${actionType}-response-message`);
+            const access_token = localStorage.getItem('access_token');
+    
+            try {
+                const balanceResponse = await fetch('http://127.0.0.1:8000/portfolio/balance', {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${access_token}`,
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ amount }),
-                });
-        
-                await handleFundsResponse(response, "Deposit");
-            });
-        
-            document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
-                event.preventDefault();
-                clearAllMessages();
-        
-                const amount = parseFloat(document.getElementById('withdraw-amount').value);
-                const access_token = localStorage.getItem('access_token');
-        
-                const response = await fetch('http://127.0.0.1:8000/portfolio/withdraw', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${access_token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ amount }),
-                });
-        
-                await handleFundsResponse(response, "Withdraw");
-            });
-        
-            async function handleTradeResponse(response, actionType) {
-                try {
-                    const messageElement = document.getElementById(`${actionType}-trade-response`);
-        
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        messageElement.textContent = `Error: ${errorData.detail || response.statusText}`;
-                        messageElement.className = 'trade-response-message error';
-                    } else {
-                        const data = await response.json();
-        
-                        messageElement.textContent = `${actionType} ${data.quantity} shares of ${data.ticker} at $${data.price.toFixed(2)} each.`;
-                        messageElement.className = 'trade-response-message success';
-        
-                        await fetchBalance(actionType);
                     }
-                } catch (error) {
-                    cconsole.warn('Trade request failed:', error);
+                });
+    
+                if (balanceResponse.ok) {
+                    const balanceData = await balanceResponse.json();
+                    messageElement.textContent = `${actionType} successful! New Balance: $${balanceData.cash_balance.toFixed(2)}`;
+                    messageElement.className = 'funds-response-message success';
+                } else {
+                    messageElement.textContent = `Error fetching balance: ${balanceResponse.statusText}`;
+                    messageElement.className = 'funds-response-message error';
                 }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+                messageElement.textContent = 'Error retrieving balance';
             }
-        
-            document.getElementById('buystock').addEventListener('submit', async function(event) {
-                event.preventDefault();
-                clearAllMessages();
-        
-                const ticker = document.getElementById('ticker_buy').value;
-                const quantity = parseFloat(document.getElementById('quantity_buy').value);
-                const access_token = localStorage.getItem('access_token');
-        
+        }
+    
+        document.getElementById('deposit-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            clearAllMessages();
+    
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            const access_token = localStorage.getItem('access_token');
+    
+            const response = await fetch('http://127.0.0.1:8000/portfolio/deposit', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount }),
+            });
+    
+            await handleFundsResponse(response, "Deposit");
+        });
+    
+        document.getElementById('withdraw-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            clearAllMessages();
+    
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const access_token = localStorage.getItem('access_token');
+    
+            const response = await fetch('http://127.0.0.1:8000/portfolio/withdraw', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount }),
+            });
+    
+            await handleFundsResponse(response, "Withdraw");
+        });
+    
+        async function handleTradeResponse(response, actionType) {
+            try {
+                const messageElement = document.getElementById(`${actionType}-trade-response`);
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    messageElement.textContent = `Error: ${errorData.detail || response.statusText}`;
+                    messageElement.className = 'trade-response-message error';
+                } else {
+                    const data = await response.json();
+    
+                    messageElement.textContent = `${actionType} ${data.quantity} shares of ${data.ticker} at $${data.price.toFixed(2)} each.`;
+                    messageElement.className = 'trade-response-message success';
+    
+                    await fetchBalance(actionType);
+                }
+            } catch (error) {
+                cconsole.warn('Trade request failed:', error);
+            }
+        }
+    
+        document.getElementById('buystock').addEventListener('submit', function(event) {
+            event.preventDefault();
+            clearAllMessages();
+
+            const ticker = document.getElementById('ticker_buy').value;
+            const quantity = parseFloat(document.getElementById('quantity_buy').value);
+            const access_token = localStorage.getItem('access_token');
+
+            const messageElement = document.getElementById("Buy-trade-response");
+            messageElement.textContent = "Submitting buy order in 5 seconds...";
+            messageElement.className = 'trade-response-message pending';
+
+            document.getElementById('cancel-buy').style.display = 'inline';
+
+            buyTimeout = setTimeout(async () => {
                 const response = await fetch('http://127.0.0.1:8000/trade/buy', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${access_token}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ticker, quantity })
+                    body: JSON.stringify({ ticker, quantity })
                 });
-        
+
+                document.getElementById('cancel-buy').style.display = 'none';
                 await handleTradeResponse(response, "Buy");
-            });
-        
-            document.getElementById('sellstock').addEventListener('submit', async function(event) {
-                event.preventDefault(); 
-                clearAllMessages(); 
+            }, 5000);
+        });
 
-                const ticker = document.getElementById('ticker_sell').value;
-                const quantity = parseFloat(document.getElementById('quantity_sell').value);
-                const access_token = localStorage.getItem('access_token');
+        document.getElementById('cancel-buy').addEventListener('click', () => {
+            clearTimeout(buyTimeout);
+            document.getElementById("Buy-trade-response").textContent = "Buy order canceled.";
+            document.getElementById("Buy-trade-response").className = 'trade-response-message canceled';
+            document.getElementById('cancel-buy').style.display = 'none';
+        });
 
-                if (!ticker || quantity <= 0) {
-                    alert('Please enter a valid stock ticker and quantity.');
-                    return;
-                }
+        document.getElementById('sellstock').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            clearAllMessages(); 
 
+            const ticker = document.getElementById('ticker_sell').value;
+            const quantity = parseFloat(document.getElementById('quantity_sell').value);
+            const access_token = localStorage.getItem('access_token');
+
+            if (!ticker || quantity <= 0) {
+                alert('Please enter a valid stock ticker and quantity.');
+                return;
+            }
+
+            const messageElement = document.getElementById("Sell-trade-response");
+            messageElement.textContent = "Submitting sell order in 5 seconds...";
+            messageElement.className = 'trade-response-message pending';
+
+            document.getElementById('cancel-sell').style.display = 'inline';
+
+            sellTimeout = setTimeout(async () => {
                 try {
                     const response = await fetch('http://127.0.0.1:8000/trade/sell', {
                         method: 'POST',
@@ -347,18 +376,21 @@
                         body: JSON.stringify({ ticker, quantity })
                     });
 
+                    document.getElementById('cancel-sell').style.display = 'none';
                     await handleTradeResponse(response, "Sell");
                 } catch (error) {
                     console.error('Error during trade:', error);
                 }
-            });
+            }, 5000);
+        });
 
-            document.querySelectorAll('form').forEach(form => {
-                form.addEventListener('submit', function(event) {
-                    clearAllMessages();
-                });
-            });
-        </script>
+        document.getElementById('cancel-sell').addEventListener('click', () => {
+            clearTimeout(sellTimeout);
+            document.getElementById("Sell-trade-response").textContent = "Sell order canceled.";
+            document.getElementById("Sell-trade-response").className = 'trade-response-message canceled';
+            document.getElementById('cancel-sell').style.display = 'none';
+        });
+    </script>
     </div>
 
  <!-- PORTFOLIO -->
@@ -477,5 +509,5 @@
                 setInterval(loadUserTransactions, 10000);
             });
             </script>
-        </div>
+    </div>
 

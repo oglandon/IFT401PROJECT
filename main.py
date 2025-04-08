@@ -14,26 +14,15 @@ from Logging_Error_Handling import app as logging_app
 from Random_Stock_Price_Gen import update_stock_prices
 from User_Auth import router as user_router
 from fastapi.middleware.cors import CORSMiddleware
+from Random_Stock_Price_Gen import initialize_stock_price_updater
+
 
 # FastAPI
 app = FastAPI(title="Proton Stock Trading System API")
 
-origins = [
-    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/",  # All our pages and local hosts
-    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/about.html",
-    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/watchlist.html",
-    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/create.html",
-    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/admin.html",
-    "https://ift401project.d2b9yqfbkjszvw.amplifyapp.com/user.html",
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "http://127.0.0.1:8000",
-    "http://localhost:3000",  
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allows all headers
@@ -49,7 +38,6 @@ app.include_router(market_hours_app, prefix="/market", tags=["Market Hours & Sch
 app.include_router(middleware_app, prefix="/middleware", tags=["Middleware"])
 app.include_router(logging_app, prefix="/logging", tags=["Logging & Error Handling"])
 
-
 # Global Exception Handler 
 @app.exception_handler(Exception)
 def global_exception_handler(request: Request, exc: Exception):
@@ -61,7 +49,7 @@ def global_exception_handler(request: Request, exc: Exception):
 
 # Periodic Stock Price Updates 
 @app.on_event("startup")
-async def start_price_updates():
-    update_stock_prices()  # Runs stock price updates when the server starts
+def startup_event():
+    initialize_stock_price_updater()
 
 # End

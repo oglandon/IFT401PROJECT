@@ -12,19 +12,51 @@ from pydantic import BaseModel
 from database import get_db  
 from auth_utils import get_current_user 
 from Market_Hours_Schedule import is_market_open
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from auth_utils import get_admin_user, get_current_user
+from sqlalchemy import DateTime
+from datetime import datetime
+from Market_Hours_Schedule import validate_market_hours
 
 # FastAPI 
 app = APIRouter()
-
-@app.post("/trade/buy", operation_id="execute_buy_trade_unique")
-def execute_buy_trade(ticker: str, quantity: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    return {"message": f"User {current_user.username} bought {quantity} shares of {ticker}"}
 
 # Database Config
 DATABASE_URL = "postgresql://admindb:IFT401Project!@protondb.cz08cemoiob0.us-east-2.rds.amazonaws.com:5432/protondb"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Secret and Algorithm
+SECRET_KEY = "your_secret_key_here"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Define OAuth2 scheme
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/token")
+
+# Validate token and get current user
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+
+        # Check that user_id is valid
+        if user_id is None or not user_id.isdigit():
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+
+        # Fetch user by ID
+        user = db.query(User).filter(User.id == int(user_id)).one_or_none()
+
+        if user is None:
+            raise HTTPException(status_code=401, detail="User not found or invalid.")
+
+        return user
+
+    except JWTError as e:
+        print(f"Token error: {e}")
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 # Models
 class User(Base):
@@ -81,7 +113,7 @@ class CancelOrderResponse(BaseModel):
     message: str
 
 # Helper Functions
-def validate_market_hours():
+def validate_market_hours(db: Session):
     if not is_market_open():
         raise HTTPException(status_code=400, detail="Market is closed")
 
@@ -95,12 +127,12 @@ def get_user_portfolio(db: Session, user_id: int, ticker: str):
     return db.query(Portfolio).filter(Portfolio.user_id == user_id, Portfolio.ticker == ticker).first()
 
 # Endpoints
-@app.post("/trade/buy", response_model=TradeResponse)
+@app.post("/buy", response_model=TradeResponse)
 def execute_buy_trade(trade_request: TradeRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
     Buy stocks: Deduct cash and add to portfolio.
     """
-    validate_market_hours()
+    validate_market_hours(db)
     stock = get_stock(db, trade_request.ticker)
     total_cost = stock.price * trade_request.quantity
 
@@ -134,12 +166,12 @@ def execute_buy_trade(trade_request: TradeRequest, db: Session = Depends(get_db)
         timestamp=transaction.timestamp
     )
 
-@app.post("/trade/sell", response_model=TradeResponse)
+@app.post("/sell", response_model=TradeResponse)
 def sell_stock(trade_request: TradeRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
     Sell stocks: Remove from portfolio and credit cash.
     """
-    validate_market_hours()
+    validate_market_hours(db)
     stock = get_stock(db, trade_request.ticker)
 
     portfolio_entry = get_user_portfolio(db, current_user.id, trade_request.ticker)
@@ -156,7 +188,7 @@ def sell_stock(trade_request: TradeRequest, db: Session = Depends(get_db), curre
     transaction = Transaction(
         user_id=current_user.id,
         ticker=trade_request.ticker,
-        quantity=trade_request.quantity,
+        quantity=-trade_request.quantity,
         price=stock.price,
         transaction_type="sell"
     )
@@ -171,7 +203,7 @@ def sell_stock(trade_request: TradeRequest, db: Session = Depends(get_db), curre
         timestamp=transaction.timestamp
     )
 
-@app.delete("/trade/order/{order_id}", response_model=CancelOrderResponse)
+@app.delete("/order/{order_id}", response_model=CancelOrderResponse)
 def cancel_order(order_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
     Cancel orders: Simulated order cancellation (not in real-time trading).

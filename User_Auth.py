@@ -2,21 +2,21 @@
 # User_Auth.py
 # Toombs Theobald Tippeconnic
 
-from fastapi import FastAPI, HTTPException, Depends, status,APIRouter
+from fastapi import FastAPI, HTTPException, Depends, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from typing import Optional
 from passlib.hash import bcrypt
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import os
 from datetime import datetime, timedelta
 from database import get_db  
 from models import User  
-from auth_utils import get_current_user 
 from fastapi import APIRouter
+from auth_utils import get_admin_user, get_current_user 
 
 # Constants
 SECRET_KEY = "your_secret_key_here"
@@ -26,11 +26,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # FastAPI 
 app = APIRouter()
 router = APIRouter()
-
-
-@router.get("/user/me")
-def get_user_info(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    return {"username": current_user.username, "email": current_user.email}
 
 # Database Configuration
 DATABASE_URL = "postgresql://admindb:IFT401Project!@protondb.cz08cemoiob0.us-east-2.rds.amazonaws.com:5432/protondb"
@@ -46,6 +41,7 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
+    cash_balance = Column(Float, default=10000.0)
 
 Base.metadata.create_all(bind=engine)
 
@@ -66,7 +62,7 @@ class Token(BaseModel):
     token_type: str
 
 # OAuth2 Config
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/token")
 
 # Helper Functions
 def get_db():
@@ -98,16 +94,21 @@ def authenticate_user(db: Session, username: str, password: str):
         return False
     return user
 
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        user_id: str = payload.get("sub")  # Correct to use user_id
+        if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        user = get_user(db, username)
+        
+        # Fetch user by ID instead of username
+        user = db.query(User).filter(User.id == user_id).first()
+        
         if user is None:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            raise HTTPException(status_code=401, detail="User not found")
+        
         return user
+    
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -135,16 +136,15 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
-    access_token = create_access_token(data={"sub": user.username})
+
+    # Use user.id instead of user.username
+    access_token = create_access_token(data={"sub": str(user.id)})  
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/users/me", response_model=UserResponse)
+@router.get("/me", response_model=UserResponse)
 def read_current_user(current_user: User = Depends(get_current_user)):
     return UserResponse(username=current_user.username, email=current_user.email, is_admin=current_user.is_admin)
 
 @router.get("/admin-only")
 def admin_only_route(current_user: User = Depends(get_admin_user)):
     return {"message": "Welcome, Admin!"}
-
-# End
-
