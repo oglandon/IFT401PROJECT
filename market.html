@@ -37,6 +37,8 @@
                         <th>Initial Price</th>
                         <th>Current Price</th>
                         <th>Market Cap</th>
+                        <th>Daily High</th>
+                        <th>Daily Low</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +47,7 @@
             </table>
             <script>
                 async function fetchAllStocks() {
-                        const apiUrl = 'http://127.0.0.1:8000/stocks/get stocks';
+                        const apiUrl = 'http://127.0.0.1:8000/stocks/get_stocks';
     
                         try {
                             const response = await fetch(apiUrl);
@@ -70,6 +72,8 @@
                                         <td>$${stock.initial_price.toFixed(2)}</td>
                                         <td class="${priceClass}">$${stock.price.toFixed(2)}</td>
                                         <td class="market-cap">$${stock.market_cap.toFixed(2)}</td>
+                                        <td>$${stock.daily_high.toFixed(2)}</td>
+                                        <td>$${stock.daily_low.toFixed(2)}</td>
                                     </tr>
                                 `;
                                 tableBody.innerHTML += row;
