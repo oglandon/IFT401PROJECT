@@ -340,6 +340,7 @@
                 <label for="buystock">Amount To Buy:</label>
                 <input type="number" id="quantity_buy" name="quantity" min="0" step="any" required placeholder="Amount to Buy">
                 <button type="submit">Purchase</button>
+                <button type="button" id="cancel-buy" style="display: none;">Cancel Buy</button>
                 <div class="trade-response-message" id="Buy-trade-response"></div>
             </form>
 
@@ -350,9 +351,14 @@
                 <label for="sellstock">Amount To Sell:</label>
                 <input type="number" id="quantity_sell" name="quantity" min="0" step="any" required placeholder="Amount to Sell">
                 <button type="submit">Sell</button>
+                <button type="button" id="cancel-sell" style="display: none;">Cancel Sell</button>
                 <div class="trade-response-message" id="Sell-trade-response"></div>
             </form>
+
             <script>
+                let buyTimeout = null;
+                let sellTimeout = null;
+                
                 if (!localStorage.getItem('access_token')) {
                     console.error("No access token found. Please log in.");
                     alert("You need to log in as an admin.");
@@ -472,27 +478,43 @@
                     }
                 }
             
-                document.getElementById('buystock').addEventListener('submit', async function(event) {
+                document.getElementById('buystock').addEventListener('submit', function(event) {
                     event.preventDefault();
                     clearAllMessages();
-            
+
                     const ticker = document.getElementById('ticker_buy').value;
                     const quantity = parseFloat(document.getElementById('quantity_buy').value);
                     const access_token = localStorage.getItem('access_token');
-            
-                    const response = await fetch('http://127.0.0.1:8000/trade/buy', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${access_token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ticker, quantity })
-                    });
-            
-                    await handleTradeResponse(response, "Buy");
+
+                    const messageElement = document.getElementById("Buy-trade-response");
+                    messageElement.textContent = "Submitting buy order in 5 seconds...";
+                    messageElement.className = 'trade-response-message pending';
+
+                    document.getElementById('cancel-buy').style.display = 'inline';
+
+                    buyTimeout = setTimeout(async () => {
+                        const response = await fetch('http://127.0.0.1:8000/trade/buy', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${access_token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ ticker, quantity })
+                        });
+
+                        document.getElementById('cancel-buy').style.display = 'none';
+                        await handleTradeResponse(response, "Buy");
+                    }, 5000);
                 });
-            
-                document.getElementById('sellstock').addEventListener('submit', async function(event) {
+
+                document.getElementById('cancel-buy').addEventListener('click', () => {
+                    clearTimeout(buyTimeout);
+                    document.getElementById("Buy-trade-response").textContent = "Buy order canceled.";
+                    document.getElementById("Buy-trade-response").className = 'trade-response-message canceled';
+                    document.getElementById('cancel-buy').style.display = 'none';
+                });
+
+                document.getElementById('sellstock').addEventListener('submit', function(event) {
                     event.preventDefault(); 
                     clearAllMessages(); 
 
@@ -505,26 +527,36 @@
                         return;
                     }
 
-                    try {
-                        const response = await fetch('http://127.0.0.1:8000/trade/sell', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${access_token}`,
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ ticker, quantity })
-                        });
+                    const messageElement = document.getElementById("Sell-trade-response");
+                    messageElement.textContent = "Submitting sell order in 5 seconds...";
+                    messageElement.className = 'trade-response-message pending';
 
-                        await handleTradeResponse(response, "Sell");
-                    } catch (error) {
-                        console.error('Error during trade:', error);
-                    }
+                    document.getElementById('cancel-sell').style.display = 'inline';
+
+                    sellTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch('http://127.0.0.1:8000/trade/sell', {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${access_token}`,
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ ticker, quantity })
+                            });
+
+                            document.getElementById('cancel-sell').style.display = 'none';
+                            await handleTradeResponse(response, "Sell");
+                        } catch (error) {
+                            console.error('Error during trade:', error);
+                        }
+                    }, 5000);
                 });
 
-                document.querySelectorAll('form').forEach(form => {
-                    form.addEventListener('submit', function(event) {
-                        clearAllMessages();
-                    });
+                document.getElementById('cancel-sell').addEventListener('click', () => {
+                    clearTimeout(sellTimeout);
+                    document.getElementById("Sell-trade-response").textContent = "Sell order canceled.";
+                    document.getElementById("Sell-trade-response").className = 'trade-response-message canceled';
+                    document.getElementById('cancel-sell').style.display = 'none';
                 });
             </script>
         </div>
@@ -574,8 +606,72 @@
         </script>
     </div> 
 
-
 <!-- TRANSACTION HISTORY -->
+    <div>
+    <div id="user-transaction-history">
+        <h2>Your User Transaction History</h2>
+        <table id="user-transaction-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access_token");
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            };
+        
+            if (!token) {
+                alert("Access token not found. Please log in.");
+                return;
+            }
+        
+            async function loadUserTransactions() {
+                try {
+                    const response = await fetch("http://127.0.0.1:8000/portfolio/transactions", {
+                        headers
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch user transactions");
+                    }
+        
+                    const data = await response.json();
+                    const tableBody = document.querySelector("#user-transaction-table tbody");
+                    tableBody.innerHTML = "";
+        
+                    data.forEach(tx => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${tx.id}</td>
+                            <td>${tx.user_id}</td>
+                            <td>${tx.amount !== null ? "$" + tx.amount.toFixed(2) : "-"}</td>
+                            <td>${tx.transaction_type}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error("Error loading user transactions:", error);
+                }
+            }
+        
+            loadUserTransactions();
+        
+            setInterval(loadUserTransactions, 10000);
+        });
+        </script>
+    </div>
+
+<!-- ALL TRANSACTION HISTORY -->
     <div>
 
     <div id="transaction-history-section">
