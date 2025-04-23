@@ -410,9 +410,6 @@
                     "Content-Type": "application/json"
                 };
         
-                let currentPage = 1;
-                const pageSize = 10;
-        
                 if (!token) {
                     alert("Access token not found. Please log in.");
                     return;
@@ -428,20 +425,14 @@
                         const stocksData = await stocksRes.json();
                         const stockText = stocksData.owned_stocks.map(stock => `${stock.ticker}: ${stock.quantity}`).join(", ");
                         document.getElementById("owned_stocks").textContent = stockText || "None";
-        
                     } catch (error) {
                         console.error("Error loading portfolio data:", error);
                     }
                 }
         
-                function refreshData() {
-                    loadBalanceAndStocks();
-                    loadTransactions(currentPage);
-                }
+                loadBalanceAndStocks();
         
-                refreshData();
-        
-                setInterval(refreshData, 10000);
+                setInterval(loadBalanceAndStocks, 10000);
             });
         </script>
     </div> 
